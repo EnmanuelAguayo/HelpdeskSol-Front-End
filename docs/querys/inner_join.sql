@@ -1,0 +1,1 @@
+SELECT tm_ticket.tick_id, tm_ticket.usu_id, tm_ticket.cat_id, tm_ticket.tick_titulo, tm_ticket.tick_descripcion, tm_usuario.usu_ap, tm_usuario.usu_nom, tm_categoria.cat_nom FROM tm_ticket INNER JOIN tm_usuario ON tm_ticket.usu_id = tm_usuario.usu_id INNER JOIN tm_categoria ON tm_ticket.cat_id = tm_categoria.cat_id WHERE tm_ticket.estado = 1 AND tm_ticket.usu_id = 1;
