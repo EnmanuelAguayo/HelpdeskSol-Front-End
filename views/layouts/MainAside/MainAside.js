@@ -1,148 +1,79 @@
-$(document).ready(function(){
+const mainAside = async () => {
+  const container = document.getElementById('mainAside');
+  const content = `
+      <!-- Brand Logo -->
+      <a href="index3.html" class="brand-link">
+        <img src="../../../public/adminlte.3.2.0/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">AdminLTE 3</span>
+      </a>
 
-  
-  
-  listar_Aside();
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="../../../public/adminlte.3.2.0/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="#" class="d-block">Alexander Pierce</a>
+          </div>
+        </div>
 
-  
-})
+        <!-- SidebarSearch Form -->
+        <div class="form-inline">
+          <div class="input-group" data-widget="sidebar-search">
+            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-sidebar">
+                <i class="fas fa-search fa-fw"></i>
+              </button>
+            </div>
+          </div>
+        </div>
 
-function listar_Aside(){
-  const profile_id = document.getElementById("profile_id").value;
-
-  data = new FormData();
-  data.append("profile_id", profile_id);
-
-    $.ajax({
-      url: "../../controllers/PerfilesControllers.php?op=listar_Aside",
-      method: "post",
-      contentType: false,
-      processData: false,
-      data: data,
-      dataType: "json",
-      success: function(response){
-      
-          const reportes = response['data']['reportes'];
-          const informar_problema = response['data']['informar_problema'];
-          const consultar_incidencias = response['data']['consultar_incidencias'];
-          const soluciones_populares = response['data']['soluciones_populares'];
-          const crear_usuarios = response['data']['crear_usuarios'];
-          const consultar_usuarios = response['data']['consultar_usuarios'];
-          const crear_perfiles = response['data']['crear_perfiles'];
-          const consultar_perfiles = response['data']['consultar_perfiles'];
-          const crear_equipos = response['data']['crear_equipos'];
-          const consultar_equipos = response['data']['consultar_equipos'];
-          const crear_tipo_equipo = response['data']['crear_tipo_equipo'];
-          const consultar_tipo_equipo = response['data']['consultar_tipo_equipo'];
-          const crear_servicios = response['data']['crear_servicios'];
-          const consultar_servicios = response['data']['consultar_servicios'];
-          const crear_categorias = response['data']['crear_categorias'];
-          const consultar_categorias = response['data']['consultar_categorias'];
-          const crear_ramas = response['data']['crear_ramas'];
-          const consultar_ramas = response['data']['consultar_ramas'];
-          
-          //reportes
-          if(reportes == 0){
-            document.getElementById("content_reportes").style.display = "none";
-          } 
-
-          //tickets
-          if(informar_problema == 0 && consultar_incidencias == 0){
-            document.getElementById("content_tickets").style.display = "none";
-          }
-
-          if(informar_problema == 0){
-            document.getElementById("informar_problema").style.display = "none";
-          }
-
-          if(consultar_incidencias == 0){
-            document.getElementById("consultar_incidencias").style.display = "none";
-          }
-
-          //soluciones populares
-          if(soluciones_populares == 0){
-            document.getElementById("soluciones_populares").style.display = "none";
-          }
-
-          //usuarios
-          if(crear_usuarios == 0 && consultar_usuarios == 0){
-            document.getElementById('content_usuarios').style.display = "none";
-          }
-
-          if(crear_usuarios == 0){
-            document.getElementById("crear_usuarios").style.display = "none";
-          }
-
-          if(consultar_usuarios == 0){
-            document.getElementById("consultar_usuarios").style.display = "none";
-          }
-
-          //perfiles
-          if(crear_perfiles == 0 && consultar_perfiles == 0){
-            document.getElementById('content_perfiles').style.display = "none";
-          }
-
-          if(crear_perfiles == 0){
-            document.getElementById("crear_perfiles").style.display = "none";
-          }
-
-          if(consultar_perfiles == 0){
-            document.getElementById("consultar_perfiles").style.display = "none";
-          }
-
-          //equipos
-          if(crear_equipos == 0 && consultar_equipos == 0 && crear_tipo_equipo == 0 && consultar_tipo_equipo == 0){
-            document.getElementById('content_equipos').style.display = "none";
-          }
-
-          if(crear_equipos == 0){
-            document.getElementById("crear_equipos").style.display = "none";
-          }
-
-          if(consultar_equipos == 0){
-            document.getElementById("consultar_equipos").style.display = "none";
-          }
-
-          if(crear_tipo_equipo == 0){
-            document.getElementById("crear_tipo_equipo").style.display = "none";
-          }
-
-          if(consultar_tipo_equipo == 0){
-            document.getElementById("consultar_tipo_equipo").style.display = "none";
-          }
-
-          //ramas y categorias
-          if(crear_servicios == 0 && consultar_servicios == 0 && crear_categorias == 0 && consultar_categorias == 0 && crear_ramas == 0 && consultar_ramas == 0){
-            document.getElementById('content_ramas_categorias').style.display = "none";
-          }
-
-          if(crear_servicios == 0){
-            document.getElementById("crear_servicios").style.display = "none";
-          }
-
-          if(consultar_servicios == 0){
-            document.getElementById("consultar_servicios").style.display = "none";
-          }
-
-          if(crear_categorias == 0){
-            document.getElementById("crear_categorias").style.display = "none";
-          }
-
-          if(consultar_categorias == 0){
-            document.getElementById("consultar_categorias").style.display = "none";
-          }
-
-          if(crear_ramas == 0){
-            document.getElementById("crear_ramas").style.display = "none";
-          }
-
-          if(consultar_ramas == 0){
-            document.getElementById("consultar_ramas").style.display = "none";
-          }
-
-
-      }
-    })
-}
-
-
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+            <li class="nav-item menu-open">
+              <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Starter Pages
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview linkPage">
+                <li class="nav-item linkPage">
+                  <a href="../bienvenido" class="nav-link active linkPage">
+                    <i class="far fa-circle nav-icon linkPage"></i>
+                    <p class="linkPage">Bienvenido</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Inactive Page</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  Simple Link
+                  <span class="right badge badge-danger">New</span>
+                </p>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    `
+  container.innerHTML = content;
+} 
+document.addEventListener('DOMContentLoaded', mainAside);

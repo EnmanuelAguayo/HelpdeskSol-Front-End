@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="public/adminlte.3.2.0/plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="public/adminlte.3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="public/adminlte.3.2.0/css/adminlte.min.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="public/adminlte.3.2.0/css/styles.css">
+  
+  <title>HELPDESK REGISTER</title>
+</head>
+
+<body class="background-login bg-light">
+  
+  <div class="container-fluid">
+    <div class="row mt-4">
+      <div class="col-sm-8 col-md-6 col-lg-4 col-xl-4 offset-sm-2 offset-md-3 offset-lg-4 offset-xl-4">
+        <div class="card">
+          <div class="card-header text-center bg-dark">
+            <img class="logo-login" src="public/adminlte.3.2.0/img/help-desk.png" width="250px" alt="logo-helpdesk">
+          </div>
+          <div class="card-body"> 
+            <form id="formLogin" method="POST">
+              <!-- Error Message -->
+              <div class="form-group">
+                <label for="nameUser">Nombre de usuario</label>
+                <input type="text" name= "nameUser" id="nameUser" class="form-control">
+              </div>   
+
+              <div class="form-group">
+                <label for="firstName">Nombre</label>
+                <input type="text" name= "firstName" id="firstName" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">Apellido</label>
+                <input type="text" name= "lastName" id="lastName" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name= "email" id="email" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="password">Contrase&ntilde;a</label>
+                <input type="password" name="password" id="password" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label for="repeatPassword">Repetir contrase&ntilde;a</label>
+                <input id="repeatPassword" class="form-control" type="password" name="repeatPassword">
+              </div>
+
+              <div class="form-group">
+                <label for="teamList">Team</label>
+                <select id="teamList" class="form-control" name="teamList"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="deviceList">Seleccione sus dispositivos</label>
+                <select id="deviceList" class="form-control" name="deviceList" multiple></select>
+              </div>
+
+              <div class="form-group mb-0">
+                <button type="button" name="submit_login" id="submitLogin" value="ok" class="btn btn-primary btn-block"> <i class="fas fa-arrow-right"></i></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-2 col-md-3 col-lg-4 col-xl-4"></div>
+    </div>
+  </div>
+  
+  <!-- jQuery -->
+  <script src="public/adminlte.3.2.0/plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="public/adminlte.3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="public/adminlte.3.2.0/js/adminlte.min.js"></script>
+  <script src="register.js"></script>
+</body>
+
+</html>
