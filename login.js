@@ -25,14 +25,14 @@ const login = async () =>{
         
         if ( response.status == 400 || response.status == 404){
             const dataError = await response.json();
-            for (let clave in dataError){
+            for (let errorMessage in dataError){
                 // Crear elemento contenedor div para el mensaje de error
                 const container = document.createElement('div');
                 container.className = 'alert alert-warning alert-dismissible fade show';
                 container.role = 'alert';
                 
                 // Crear contenido para el mensaje de error
-                const content = clave + ': ' + dataError[clave];
+                const content = errorMessage + ': ' + dataError[errorMessage];
                 const strong = document.createElement('strong');
                 strong.textContent = content;
                 container.appendChild(strong);
