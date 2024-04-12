@@ -59,4 +59,14 @@ const login = async () =>{
     }
 }
 
+const checkSession = () => {
+    const userDataString = sessionStorage.getItem('user');
+    const userData = JSON.parse(userDataString);
+
+    if (userData != null) {
+        window.location.href = 'views/pages/bienvenido';
+    };
+};
+
+document.addEventListener('DOMContentLoaded', checkSession);
 document.querySelector('#submitLogin').addEventListener('click', login);
