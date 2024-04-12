@@ -139,8 +139,6 @@ const register = async (event) => {
             }
             window.location.href = 'login.html';
 
-
-
         } else if (response.status == 400 || response.status == 404) {
             let dataError = await response.json();
             for (let errorMessage in dataError) {
