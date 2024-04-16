@@ -1,5 +1,9 @@
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+
+
+const pushContent = async () => {
+  const container = document.getElementById('mainDinamic');
+  container.setAttribute('pageName', 'timeLine');
+  const content = ` 
   <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container-fluid">
@@ -242,8 +246,8 @@
         <div class="col-sm-12 card p-2">
           <form action="#" id="" class="p-4">
             <div class="form-group">
-              <label for="respuesta_incidencia">Escribir una respuesta</label>
-              <textarea name="respuesta_incidencia" id="respuesta_incidencia"></textarea>
+              <label for="description">Escribir una respuesta</label>
+              <textarea name="description" id="description"></textarea>
             </div>
 
             <div class="form-group">
@@ -273,5 +277,9 @@
     </div>
     <!-- /.container-fluid -->
   </section>
-</div>
-<!-- /.content-wrapper -->
+  `
+  container.innerHTML = content;
+  tinyRender('textarea#description');
+}
+
+document.addEventListener('DOMContentLoaded', pushContent);

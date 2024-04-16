@@ -36,25 +36,33 @@ const mainAside = async () => {
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <!-- Add icons to the links using the .nav-icon class
                 with font-awesome or any other icon font library -->
+            
+                <li class="nav-item linkPage">
+                <a href="../bienvenido" class="nav-link linkPage">
+                  <i class="far fa-circle nav-icon linkPage"></i>
+                  <p class="linkPage">Bienvenido</p>
+                </a>
+              </li>
+
             <li class="nav-item menu-open">
               <a href="#" class="nav-link active">
-                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <i class="nav-icon fas fa-ticket"></i>
                 <p>
-                  Starter Pages
+                  Tickets
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview linkPage">
-                <li class="nav-item linkPage">
-                  <a href="../bienvenido" class="nav-link active linkPage">
-                    <i class="far fa-circle nav-icon linkPage"></i>
-                    <p class="linkPage">Bienvenido</p>
+                <li class="nav-item">
+                  <a href="../informarIncidencia" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Informar Problema</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="../incidencias" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Inactive Page</p>
+                    <p>Incidencias</p>
                   </a>
                 </li>
               </ul>
