@@ -54,15 +54,15 @@ const mainAside = async () => {
               </a>
               <ul class="nav nav-treeview linkPage">
                 <li class="nav-item">
-                  <a href="../informarIncidencia" class="nav-link">
+                  <a href="../nuevoTicket" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Informar Problema</p>
+                    <p>Nuevo ticket</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../incidencias" class="nav-link">
+                  <a href="../ticketsAbiertos" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Incidencias</p>
+                    <p>Tickets abiertos</p>
                   </a>
                 </li>
               </ul>

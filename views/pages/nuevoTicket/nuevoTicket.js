@@ -54,13 +54,13 @@ const pushContent = async () => {
         <div class="container-fluid">
             <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0"><i class="nav-icon fas fa-laptop-medical"></i> Informar incidencia</h1>
+                <h1 class="m-0"><i class="nav-icon fas fa-laptop-medical"></i> Nuevo Ticket</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
                 <li class="breadcrumb-item">Tickets</li>
-                <li class="breadcrumb-item active">Informar incidencia</li>
+                <li class="breadcrumb-item active">Nuevo Ticket</li>
                 </ol>
             </div><!-- /.col -->
             </div><!-- /.row -->
