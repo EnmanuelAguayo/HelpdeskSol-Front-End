@@ -118,11 +118,6 @@ const pushContent = (nameDataTable, data) => {
     container.innerHTML = content;
     
     renderDataTable(nameDataTable, data);
-    document.addEventListener('click', viewTicket);
-};
-
-const viewTicket = () => {
-    
 };
 
 document.addEventListener('DOMContentLoaded', getTickets);
