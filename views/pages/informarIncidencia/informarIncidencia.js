@@ -32,7 +32,6 @@ const getServiceType = async () => {
         } else if (response.status == 400){
             console.error(response.status);
         } else if (response.status == 401){
-            
             window.location.href = '../../../login.html';
         } else if (response.status == 403){
             console.error(response.status);
@@ -55,13 +54,13 @@ const pushContent = async () => {
         <div class="container-fluid">
             <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0"><i class="nav-icon fas fa-laptop-medical"></i> Informar problema</h1>
+                <h1 class="m-0"><i class="nav-icon fas fa-laptop-medical"></i> Informar incidencia</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item">Incidencias</li>
-                <li class="breadcrumb-item active">Informar problema</li>
+                <li class="breadcrumb-item">Tickets</li>
+                <li class="breadcrumb-item active">Informar incidencia</li>
                 </ol>
             </div><!-- /.col -->
             </div><!-- /.row -->
@@ -112,7 +111,7 @@ const pushContent = async () => {
     </section>
     `;
     container.innerHTML = content;
-    tinyRender();
+    tinyRender('textarea#description');
     document.getElementById('submitNewTicket').addEventListener('click', newTicket);
 };
 
@@ -166,24 +165,6 @@ const newTicket = async () => {
         console.error('Error', error);
     }
 };
-
-const tinyRender = () => {
-    tinymce.init({
-        selector: 'textarea#description',
-        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker markdown',
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-
-        setup: function(editor) {
-            editor.on('change', function (e) {
-                document.getElementById('notes').value = editor.getContent('textarea#description');
-            });
-            editor.on('submit', function (e) {
-                editor.setContent('');
-            });
-        }
-    });
-};
-
 
 document.addEventListener('DOMContentLoaded', pushContent);
 document.addEventListener('DOMContentLoaded', getServiceType);
