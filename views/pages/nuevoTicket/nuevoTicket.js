@@ -3,7 +3,7 @@ const getServiceType = async () => {
     const userData = JSON.parse(userDataString);
     
     if (userData == null) {
-        window.location.href = '../../../login.html';
+        window.location.href = '../../../login';
     };
 
     const endpointListServiceType = 'http://127.0.0.1:8000/list/service-type';
@@ -29,15 +29,16 @@ const getServiceType = async () => {
                 select.appendChild(optionElement);
             });
 
-        } else if (response.status == 400){
-            console.error(response.status);
-        } else if (response.status == 401){
-            window.location.href = '../../../login.html';
-        } else if (response.status == 403){
-            console.error(response.status);
-        } else if (response.status == 404){
-            console.error(response.status);
-        }
+        } else if (response.status == 401) {
+            sessionStorage.clear();
+            window.location.href = '../../../login';
+          } else if (response.status == 403) {
+            window.location.href = '../error403.html';
+          } else if (response.status == 404) {
+            window.location.href = '../error404.html';
+          } else {
+              console.error('Error', response.status);
+          }
     } catch (error) {
         console.error('Error', error);
     }
@@ -120,7 +121,7 @@ const newTicket = async () => {
     const userData = JSON.parse(userDataString);
     
     if (userData == null) {
-        window.location.href = '../../../login.html';
+        window.location.href = '../../../login';
     };
 
     const endpointNewTicket = 'http://127.0.0.1:8000/ticket/new';
@@ -143,6 +144,9 @@ const newTicket = async () => {
         })
     }
 
+    // Delete errors
+    deleteErrors();
+
     try {
         const response = await fetch(endpointNewTicket, options);
         
@@ -155,7 +159,7 @@ const newTicket = async () => {
                 showErrors(errorMessage + ': ' + dataError[errorMessage], 'formNewTicket');
             }
         } else if (response.status == 401) {
-            window.location.href = '../../../login.html';
+            window.location.href = '../../../login';
         } else if (response.status == 403) {
             window.location.href = '../error403.html';
         } else if (response.status == 404) {

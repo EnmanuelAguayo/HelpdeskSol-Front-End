@@ -3,7 +3,7 @@ const bienvenido = async () => {
   const userData = JSON.parse(userDataString);
   
   if (userData == null) {
-    window.location.href = '../../../login.html';
+    window.location.href = '../../../login';
   }
   
   const endpointInfoCustomer = 'http://127.0.0.1:8000/info/customer';
@@ -43,13 +43,14 @@ const bienvenido = async () => {
           document.getElementById('infoDevices').innerHTML = infoDevices;
         }
         
-      }else if (response.status == 401) {
-        console.error(response.status);
-      }else if (response.status == 403) {
-        console.error(response.status);
-      }else if (response.status == 404 || response.status == 400) {
-        console.error(response.status);
-      }else {
+      } else if (response.status == 401) {
+        sessionStorage.clear();
+        window.location.href = '../../../login';
+      } else if (response.status == 403) {
+        window.location.href = '../error403.html';
+      } else if (response.status == 404) {
+        window.location.href = '../error404.html';
+      } else {
           console.error('Error', response.status);
       }
   } catch (error){

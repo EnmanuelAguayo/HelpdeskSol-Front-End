@@ -3,7 +3,7 @@ const getTickets = async () => {
     const userData = JSON.parse(userDataString);
 
     if (userData == null) {
-        window.location.href = '../../../login.html';
+        window.location.href = '../../../login';
     }
 
     const endpointListOpenTickets = 'http://127.0.0.1:8000/ticket/list/customer';
@@ -47,11 +47,12 @@ const getTickets = async () => {
         } else if (response.status == 400) {
             console.error(response.status);
         } else if (response.status == 401) {
-            window.location.href = '../../../login.html';
+            sessionStorage.clear();
+            window.location.href = '../../../login';
         } else if (response.status == 403) {
-            console.error(response.status);
+            window.location.href = '../error403.html';
         } else if (response.status == 404) {
-            console.error(response.status);
+            window.location.href = '../error404.html';
         }
     } catch (error) {
         console.error('Error', error);
@@ -59,55 +60,7 @@ const getTickets = async () => {
 
 };
 
-const viewTicket = async (ticket) => {
-    const userDataString = sessionStorage.getItem('user');
-    const userData = JSON.parse(userDataString);
-    if (userData == null) {
-        window.location.href = '../../../login/';
-    };
-
-    const endpointViewTicket = 'http://127.0.0.1:8000/ticket/view/' + ticket;
-    const options = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + userData.token
-        }
-    }
-
-    try {
-        const response = await fetch(endpointViewTicket, options);
-        if (response.status == 200) {
-            const data = await response.json();
-
-            // Get Dom elements
-            const title = document.getElementById('title');
-            const state = document.getElementById('state');
-            const priority = document.getElementById('priority');
-            const createAt = document.getElementById('createAt');
-            const user = document.getElementById('user');
-            const category = document.getElementById('category');
-            const serviceType = document.getElementById('serviceType');
-            const support = document.getElementById('support');
-
-            // Set Dom elements
-            title.textContent = `#Ticket ${data.ticket} - ${data.title}`;
-            state.textContent = data.state;
-            priority.textContent = data.priority;
-            createAt.innerHTML = `${data.create_at} <i class="fas fa-clock"></i>`;
-            user.textContent = data.user;
-            category.textContent = data.category;
-            serviceType.textContent = data.service_type;
-            support.textContent = data.support;
-        } else {
-            console.error(response.status);
-        }
-    } catch (error){
-        console.error('Error', error);
-    }
-
-}
-
+// List tickets (Activos, En proceso, Resueltos)
 const listTickets = (nameDataTable, data) => {
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'incidencias');
@@ -169,14 +122,10 @@ const listTickets = (nameDataTable, data) => {
     renderDataTable(nameDataTable, data);
 };
 
+// Render ticket (View and TimeLine)
 const renderTicketContent = (ticket) => {
-    if (ticket > 0) {
-        ticketContent(ticket);
-    };
-};
-
-const ticketContent = (ticket) => {
     viewTicket(ticket);
+    timeLine(ticket);
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'viewTicket');
     const content = ` 
@@ -258,143 +207,7 @@ const ticketContent = (ticket) => {
             </div>
             <div class="col-sm-12 card p-2">
             <!-- The timeline -->
-            <div class="timeline timeline-inverse">
-                <!-- timeline time label -->
-                <div class="time-label">
-                <span class="bg-secondary">
-                    22 de set 2022
-                </span>
-                </div>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-success"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05</span>
-
-                    <h3 class="timeline-header">Ticket creado por<a href="#"> Enmanuel Aguayo</a></h3>
-
-                    <div class="timeline-body">
-                    Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                    weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                    jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                    quora plaxo ideeli hulu weebly balihoo...
-                    </div>
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-warning"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header border-0">Ticket asignado a <a href="#">Roberto Mart&iacute;nez</a>
-                    </h3>
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-warning"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header">Ticket se encuentra en proceso <a href="#">Roberto Mart&iacute;nez</a></h3>
-                    <!--<div class="timeline-footer">
-                    <a href="#" class="btn btn-warning btn-flat btn-sm">View comment</a>
-                    </div>-->
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-warning"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header">Respuesta de <a href="#">Roberto Mart&iacute;nez</a></h3>
-
-                    <div class="timeline-body">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe quam omnis corrupti pariatur corporis vel
-                    voluptatibus rem est eius eos dignissimos quia laboriosam autem deserunt illum dolores odit, obcaecati
-                    accusamus.
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe quam omnis corrupti pariatur corporis vel
-                    voluptatibus rem est eius eos dignissimos quia laboriosam autem deserunt illum dolores odit, obcaecati
-                    accusamus.
-                    </div>
-
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-success"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header">Respuesta de <a href="#">Enmanuel Aguayo</a></h3>
-
-                    <div class="timeline-body">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe quam omnis corrupti pariatur corporis vel
-                    voluptatibus rem est eius eos dignissimos quia laboriosam autem deserunt illum dolores odit, obcaecati
-                    accusamus.
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe quam omnis corrupti pariatur corporis vel
-                    voluptatibus rem est eius eos dignissimos quia laboriosam autem deserunt illum dolores odit, obcaecati
-                    accusamus.
-                    </div>
-
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline time label -->
-                <div class="time-label">
-                <span class="bg-secondary">
-                    23 de set 2022
-                </span>
-                </div>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-danger"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header">Ticket Cerrado por <a href="#">Roberto Mart&iacute;nez</a></h3>
-
-                    <div class="timeline-body">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam eveniet temporibus nisi quaerat esse.
-                    Odio qui fugiat error libero distinctio? Officia aperiam porro praesentium! Rem dolorum qui ullam aspernatur eos.
-                    </div>
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <div>
-                <i class="fas fa-envelope bg-danger"></i>
-
-                <div class="timeline-item">
-                    <span class="time"><i class="far fa-clock"></i> 12:05 pm</span>
-
-                    <h3 class="timeline-header">Ticket Aprobado por <a href="#">Enmanuel Aguayo</a></h3>
-
-                    <div class="timeline-body">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam eveniet temporibus nisi quaerat esse.
-                    Odio qui fugiat error libero distinctio? Officia aperiam porro praesentium! Rem dolorum qui ullam aspernatur eos.
-                    </div>
-                </div>
-                </div>
-                <!-- END timeline item -->
-                <div>
-                <i class="far fa-clock bg-gray"></i>
-                </div>
-            </div>
+            <div class="timeline timeline-inverse"></div>
             </div>
             <div class="col-sm-12 card p-2">
             <form action="#" id="formResponseTicket" class="p-4">
@@ -435,7 +248,291 @@ const ticketContent = (ticket) => {
     tinyRender('textarea#description');
 };
 
+// View ticket
+const viewTicket = async (ticket) => {
+    const userDataString = sessionStorage.getItem('user');
+    const userData = JSON.parse(userDataString);
+    if (userData == null) {
+        window.location.href = '../../../login/';
+    };
 
+    const endpointViewTicket = 'http://127.0.0.1:8000/ticket/view/' + ticket;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData.token
+        }
+    }
+
+    try {
+        const response = await fetch(endpointViewTicket, options);
+        if (response.status == 200) {
+            const data = await response.json();
+
+            // Get Dom elements
+            const title = document.getElementById('title');
+            const state = document.getElementById('state');
+            const priority = document.getElementById('priority');
+            const createAt = document.getElementById('createAt');
+            const user = document.getElementById('user');
+            const category = document.getElementById('category');
+            const serviceType = document.getElementById('serviceType');
+            const support = document.getElementById('support');
+
+            // Set Dom elements
+            title.textContent = `#Ticket ${data.ticket} - ${data.title}`;
+            state.textContent = data.state;
+            priority.textContent = data.priority;
+            createAt.innerHTML = `${data.create_at} <i class="fas fa-clock"></i>`;
+            user.textContent = data.user;
+            category.textContent = data.category;
+            serviceType.textContent = data.service_type;
+            support.textContent = data.support;
+        } else {
+            console.error(response.status);
+        }
+    } catch (error){
+        console.error('Error', error);
+    }
+
+}
+
+// TimeLine
+const timeLine = async (ticket) => {
+    const userDataString = sessionStorage.getItem('user');
+    const userData = JSON.parse(userDataString);
+    if (userData == null) {
+        window.location.href = '../../../login';
+    };
+
+    const endpointTimeLine = 'http://127.0.0.1:8000/ticket/timeline/' + ticket;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData.token
+        }
+    }
+
+    try {
+        const response = await fetch(endpointTimeLine, options);
+
+        if (response.status == 200) {
+            let data = await response.json();
+            const timeLineContainer = document.querySelector('div.timeline');
+            
+            // Corroborar si hay elementos para mostrar
+            if (data.length > 0) {
+                const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                const userOptions = ['TC', 'BC', 'LC', 'TA', 'CL', 'R1'];
+                const supportOptions = ['AS', 'BS', 'LS', 'SS', 'R', 'RR', 'R2'];
+                const automaticOptions = ['CA'];
+
+                // Iterar elementos
+                data.forEach((history, index) => {
+                    /*
+                    Al iterar cada elemento se evaluará si item = 0. 
+                    1- Si es Verdadero: crea un elemento time-label para segmentar las historias por fecha y time-line-item para mostrar
+                    el movimiento por hora en esa fecha.
+                    2- Si es Falso: A través de otra condicional evalúa si la fecha es igual al item anterior. Si es verdadero
+                    entonces se evitará crear el elemento time-label de nuevo para pasar a crear directamente time-line-item.
+                    
+                    Con esto lograremos agrupar el historial del ticket por fecha y posicionando como sub-contenido del mismo el movimiento
+                    específico por hora y minutos.
+                    */
+                   
+                   // Transformación de datos para fecha y hora
+                   const dateHistory = new Date(history.create_at);
+                   const stringActualDateHistory = history.create_at.split('T')[0];
+                   const stringPreviousDateHistory = index > 0 ? data[index - 1].create_at.split('T')[0] : '';
+                   const fullDate = (dateHistory.getDate()) + ' de ' + monthNames[dateHistory.getMonth()] + ' ' + dateHistory.getFullYear();
+                   const hour = dateHistory.getHours();
+                   const minutes = dateHistory.getMinutes() == 0 ? '00' : (dateHistory.getMinutes() <= 9 ? '0' + dateHistory.getMinutes() : dateHistory.getMinutes());
+                   const fullTime = hour <= 12 ? hour + ':' + minutes + ' am' : hour + ':' + minutes + ' pm';
+                   
+                   if (stringActualDateHistory != stringPreviousDateHistory) {
+                        /*
+                            Crear elemento time-label y su contenido. Luego agregar con appendChild al timeLineContainer
+                        */
+                        const timeLabelDiv = document.createElement('div');
+                        timeLabelDiv.className = 'time-label';
+                        const timeLabelSpan = document.createElement('span');
+                        timeLabelSpan.className = 'bg-secondary';
+                        timeLabelSpan.innerHTML = fullDate;
+                        timeLabelDiv.appendChild(timeLabelSpan);
+                        timeLineContainer.appendChild(timeLabelDiv);
+
+                        /*
+                            Crear elemento timeline-item el color del mismo dependerá si la respuesta es del cliente o del soporte.
+                            # User
+                            ('TC', 'Ticket creado'),
+                            ('BC', 'Ticket en bandeja del cliente'),
+                            ('LC', 'Cliente abrió el ticket'),
+                            ('TA', 'Ticket aprobado por el cliente'),
+                            ('CL', 'Ticket calificado por el cliente'),
+
+                            # Support
+                            ('AS', 'Ticket asignado a soporte'),
+                            ('BS', 'Ticket en bandeja del soporte'),
+                            ('LS', 'Soporte abrió el ticket'),
+                            ('SS', 'Ticket se marcó como solucionado por soporte'),
+                            ('R', 'Ticket Rechazado por soporte'),
+                            ('RR', 'Ticket reasignado a soporte'),
+
+                            # Automatic
+                            ('CA', 'Este ticket se cerró automáticamente porque han pasado 2 días sin respuesta del cliente desde la solución por parte de soporte.'),
+                            ('R1', 'Respuesta de cliente'),
+                            ('R2', 'Respuesta de soporte'),
+
+                            Toda respuesta relacionada al cliente será de color azul y del soporte color amarillo. Al aprobar el ticket será de color verde.
+                        */
+                                                    
+                        // Crear sub contenido
+                        const elementDiv = document.createElement('div');
+                        const elementI = document.createElement('i');
+                        const timeLineItemDiv = document.createElement('div');
+                        const timeSpan = document.createElement('span');
+                        const header = document.createElement('h3');
+                        
+                        // Set attribute
+                        if (userOptions.includes(history.sub_state_simple)) {
+                            elementI.className = 'fas fa-envelope bg-primary';   
+                        } else if (supportOptions.includes(history.sub_state_simple)) {
+                            elementI.className = 'fas fa-envelope bg-warning';
+                        } else {
+                            elementI.className = 'fas fa-envelope bg-secondary';
+                        }
+                        timeLineItemDiv.className = 'timeline-item';
+                        timeSpan.className = 'time';
+                        header.className = 'timeline-header';
+                          
+                        // Append content
+
+                        if (
+                            history.sub_state_simple == 'TC' ||
+                            history.sub_state_simple == 'BC' ||
+                            history.sub_state_simple == 'LC' ||
+                            history.sub_state_simple == 'TA' ||
+                            history.sub_state_simple == 'CL' ||
+                            history.sub_state_simple == 'R1'
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                        } else if (
+                            history.sub_state_simple == 'AS' ||
+                            history.sub_state_simple == 'BS' ||
+                            history.sub_state_simple == 'LS' ||
+                            history.sub_state_simple == 'SS' ||
+                            history.sub_state_simple == 'R' ||
+                            history.sub_state_simple == 'R2'
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                        } else if (
+                            history.sub_state_simple == 'RR' ||
+                            history.sub_state_simple == 'CA' 
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';
+                        };
+                                
+                        timeSpan.innerHTML = '<i class="far fa-clock"></i> ' + fullTime;
+                        timeLineItemDiv.appendChild(timeSpan);
+                        timeLineItemDiv.appendChild(header);
+                        
+                        if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
+                            const body = document.createElement('div');
+                            body.className = 'timeline-body';
+                            body.textContent = history.comment;
+                            timeLineItemDiv.appendChild(body);  
+                        };
+
+                        elementDiv.appendChild(elementI);
+                        elementDiv.appendChild(timeLineItemDiv);
+                        timeLineContainer.appendChild(elementDiv);
+                    } else {
+                        // Comparamos si la fecha actual que se está iterando es igual a la fecha del elemento anterior. Esto sirve para resumir movimientos de la misma fecha.
+                        // Crear sub contenido
+                        const elementDiv = document.createElement('div');
+                        const elementI = document.createElement('i');
+                        const timeLineItemDiv = document.createElement('div');
+                        const timeSpan = document.createElement('span');
+                        const header = document.createElement('h3');
+                        
+                        // Set attribute
+                        if (userOptions.includes(history.sub_state_simple)) {
+                            elementI.className = 'fas fa-envelope bg-primary';   
+                        } else if (supportOptions.includes(history.sub_state_simple)) {
+                            elementI.className = 'fas fa-envelope bg-warning';
+                        } else {
+                            elementI.className = 'fas fa-envelope bg-secondary';
+                        }
+                        timeLineItemDiv.className = 'timeline-item';
+                        timeSpan.className = 'time';
+                        header.className = 'timeline-header';
+                          
+                        // Append content
+                        if (
+                            history.sub_state_simple == 'TC' ||
+                            history.sub_state_simple == 'BC' ||
+                            history.sub_state_simple == 'LC' ||
+                            history.sub_state_simple == 'TA' ||
+                            history.sub_state_simple == 'CL' ||
+                            history.sub_state_simple == 'R1'
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                        } else if (
+                            history.sub_state_simple == 'AS' ||
+                            history.sub_state_simple == 'BS' ||
+                            history.sub_state_simple == 'LS' ||
+                            history.sub_state_simple == 'SS' ||
+                            history.sub_state_simple == 'R' ||
+                            history.sub_state_simple == 'R2'
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                        } else if (
+                            history.sub_state_simple == 'RR' ||
+                            history.sub_state_simple == 'CA' 
+                        ) {
+                            header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';
+                        };
+                        
+                        timeSpan.innerHTML = '<i class="far fa-clock"></i> ' + fullTime;
+                        timeLineItemDiv.appendChild(timeSpan);
+                        timeLineItemDiv.appendChild(header);
+                        
+                        if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
+                            const body = document.createElement('div');
+                            body.className = 'timeline-body';
+                            body.textContent = history.comment;
+                            timeLineItemDiv.appendChild(body);  
+                        };
+
+                        elementDiv.appendChild(elementI);
+                        elementDiv.appendChild(timeLineItemDiv);
+                        timeLineContainer.appendChild(elementDiv);
+                    }
+                   
+                });
+            
+            // End TimeLine
+            const endTimeLineDiv = document.createElement('div');
+            const endTimeLineIcon = document.createElement('i');
+            endTimeLineIcon.className = 'far fa-clock bg-gray';
+            endTimeLineDiv.appendChild(endTimeLineIcon);
+            timeLineContainer.appendChild(endTimeLineDiv);
+
+            } else {
+                timeLineContainer.innerText = 'No hay historias para mostrar';
+                timeLineContainer.className = '';
+            }
+        } else {
+            console.error(response.status);
+        }
+    } catch (error) {
+        console.error('Error', error);
+    }
+
+
+};
 
 document.addEventListener('DOMContentLoaded', getTickets);
 

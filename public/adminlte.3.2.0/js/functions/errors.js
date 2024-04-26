@@ -1,13 +1,4 @@
 const showErrors = (message, idForm) => {
-    // Delete exists errors
-    let errorMessage = document.getElementsByClassName('alert-warning');
-    if (errorMessage.length > 0){
-        for (let index = 0; index <= errorMessage.length; index++) {
-            const element = errorMessage[0];
-            element.remove();
-        }
-    }
-
     // Create elements for errors
     const container = document.createElement('div');
     container.className = 'alert alert-warning alert-dismissible fade show mt-3';
@@ -21,4 +12,15 @@ const showErrors = (message, idForm) => {
 
     // Show error
     document.getElementById(idForm).appendChild(container);
+};
+
+const deleteErrors = () => {
+    // Delete exists errors
+    let errorMessage = document.getElementsByClassName('alert-warning');
+    if (errorMessage.length > 0){
+        for (let index = 0; index <= errorMessage.length; index++) {
+            const element = errorMessage[0];
+            element.remove();
+        }
+    }
 };
