@@ -1,3 +1,4 @@
+// API listar tickets de cliente
 const getTickets = async () => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
@@ -34,7 +35,7 @@ const getTickets = async () => {
                 );
                 subArray.push(
                     `
-                        <button type='button' onClick='renderTicketContent(${dataRow.ticket})' id='${dataRow.ticket}' class='btn btn-info'>
+                        <button type='button' onClick='renderTicketContent(this, ${dataRow.ticket})' id='${dataRow.ticket}' value='${dataRow.approved}' class='btn btn-info'>
                             <i class='far fa-solid fa-eye'></i>
                         </button>
                     `
@@ -60,7 +61,7 @@ const getTickets = async () => {
 
 };
 
-// List tickets (Activos, En proceso, Resueltos)
+// Listar tickets en el front (Activos, En proceso, Resueltos)
 const listTickets = (nameDataTable, data) => {
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'incidencias');
@@ -122,133 +123,114 @@ const listTickets = (nameDataTable, data) => {
     renderDataTable(nameDataTable, data);
 };
 
-// Render ticket (View and TimeLine)
-const renderTicketContent = (ticket) => {
-    viewTicket(ticket);
-    timeLine(ticket);
+// Renderizar información del ticket (View and TimeLine) al dar click en el registro
+const renderTicketContent = (element, ticket) => {
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'viewTicket');
     const content = ` 
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-        <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-            <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
-            </div><!-- /.col -->
-            <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item">Ticket</li>
-                <li class="breadcrumb-item active">Ver ticket</li>
-            </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <section class="content">
-        <div class="container-fluid">
-        <div class="row">
-            <h3>
-                <strong>
-                    <span class="badge badge-pill badge-success" id="title"></span>
-                </strong>
-            </h3>
-            <div class="col-sm-12 card bg-white p-4">
-                <div class="row">
-                    <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
-                    <div class="row">
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Estado:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="state"></div>
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Prioridad:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="priority"></div>
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Fecha de creaci&oacute;n:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="createAt"></div>
-                    </div>
-                    </div>
-                    <!-- /. left -->
-                    <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
-                    <div class="row">
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Usuario:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="user"></div>
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Categor&iacute;a:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="category"></div>
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Tipo de servicio:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="serviceType"></div>
-                        <!-- list-group -->
-                        <div class="col-6 mb-2">
-                            <b>Asignado a:</b>
-                        </div>
-                        <div class="col-6 mb-2" id="support"></div>
-                    </div>
-                    </div>
-                    <!-- /. right -->
-                </div>
-            </div>
-            <div class="col-sm-12 card p-2">
-            <!-- The timeline -->
-            <div class="timeline timeline-inverse"></div>
-            </div>
-            <div class="col-sm-12 card p-2">
-            <form action="#" id="formResponseTicket" class="p-4">
-                <div class="form-group">
-                <label for="description">Escribir una respuesta</label>
-                <textarea name="description" id="description"></textarea>
-                </div>
-
-                <div class="form-group">
-                <label for="images">Adjuntar archivos</label>
-                <input type="file" name="images" id="images" class="form-control-file">
-                </div>
-
-                <div class="row">
-                <div class="col-6">
-                    <div class="form-group">
-                    <label for="estado">Estado</label>
-                    <select class="form-control" name="estado" id="estado">
-                        <option>Abierto</option>
-                        <option>En proceso</option>
-                        <option>Cerrado</option>
-                    </select>
-                    </div>
-                </div>
-                </div>
-
-                <div class="btn-grupo">
-                <button type="submit" class="btn btn-primary">Enviar respuesta</button>
-                </div>
-            </form>
-            </div>
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item">Ticket</li>
+                    <li class="breadcrumb-item active">Ver ticket</li>
+                </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
         </div>
-        </div>
-        <!-- /.container-fluid -->
-    </section>
+        <!-- /.content-header -->
+
+        <section class="content">
+            <div class="container-fluid">
+            <div class="row">
+                <h3 id="stateTicket">
+                    <strong>
+                        <span class="badge badge-pill badge-success" id="title"></span>
+                    </strong>
+                </h3>
+                <div class="col-sm-12 card bg-white p-4">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
+                        <div class="row">
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Estado:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="state"></div>
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Prioridad:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="priority"></div>
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Fecha de creaci&oacute;n:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="createAt"></div>
+                        </div>
+                        </div>
+                        <!-- /. left -->
+                        <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
+                        <div class="row">
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Usuario:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="user"></div>
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Categor&iacute;a:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="category"></div>
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Tipo de servicio:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="serviceType"></div>
+                            <!-- list-group -->
+                            <div class="col-6 mb-2">
+                                <b>Asignado a:</b>
+                            </div>
+                            <div class="col-6 mb-2" id="support"></div>
+                        </div>
+                        </div>
+                        <!-- /. right -->
+                    </div>
+                </div>
+                <div class="col-sm-12 card p-2">
+                <!-- The timeline -->
+                <div class="timeline timeline-inverse"></div>
+                </div>
+                <div class="col-sm-12 card p-2" id="formContainerResponseTicket"></div>
+            </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
     `
     container.innerHTML = content;
-    tinyRender('textarea#description');
+    viewTicket(ticket);
+    timeLine(ticket);
+
+    // Renderizar formulario de respuesta en caso que el ticket aún se encuentre en estado pendiente de aceptación
+    console.log(element.value);
+    const verifyTicketApproved = element.value;
+    if (verifyTicketApproved == 'false') {
+        renderFormResponseTicket(ticket);
+        tinyRender('textarea#comment');
+    } else if (verifyTicketApproved == 'true') {
+        document.getElementById('formContainerResponseTicket').style.display = 'none';
+    }
+    document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
 };
 
-// View ticket
+// API View ticket
 const viewTicket = async (ticket) => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
@@ -289,6 +271,23 @@ const viewTicket = async (ticket) => {
             category.textContent = data.category;
             serviceType.textContent = data.service_type;
             support.textContent = data.support;
+
+            const strongTicketValue = document.createElement('strong');
+            const spanTicketValue = document.createElement('span');
+
+            spanTicketValue.setAttribute('id', 'verifyTicketApproved');
+            spanTicketValue.className = 'badge badge-pill badge-secondary';
+
+            if (data.approved[0]) {
+                spanTicketValue.textContent = 'Ticket aprobado por el cliente';
+                spanTicketValue.setAttribute('value', true);
+            } else {
+                spanTicketValue.setAttribute('value', false);
+            }
+            strongTicketValue.appendChild(spanTicketValue);
+            document.getElementById('stateTicket').appendChild(strongTicketValue);
+
+            
         } else {
             console.error(response.status);
         }
@@ -298,7 +297,7 @@ const viewTicket = async (ticket) => {
 
 }
 
-// TimeLine
+// API TimeLine
 const timeLine = async (ticket) => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
@@ -441,7 +440,7 @@ const timeLine = async (ticket) => {
                         if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
                             const body = document.createElement('div');
                             body.className = 'timeline-body';
-                            body.textContent = history.comment;
+                            body.innerHTML = history.comment;
                             timeLineItemDiv.appendChild(body);  
                         };
 
@@ -502,7 +501,7 @@ const timeLine = async (ticket) => {
                         if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
                             const body = document.createElement('div');
                             body.className = 'timeline-body';
-                            body.textContent = history.comment;
+                            body.innerHTML = history.comment;
                             timeLineItemDiv.appendChild(body);  
                         };
 
@@ -533,6 +532,65 @@ const timeLine = async (ticket) => {
 
 
 };
+
+// API Response ticket
+const responseTicket = async () => {
+    userDataString = sessionStorage.getItem('user');
+    userData = JSON.parse(userDataString)
+    
+    if (userData.token == null) {
+        window.location.href = '../../../login';
+    };
+
+    const endpointNewTicket = 'http://127.0.0.1:8000/ticket/response/customer';
+    const ticket = document.getElementById('ticket').value;
+    const comment = document.getElementById('notes').value;
+    const files = document.getElementById('files').files;
+    const approved = document.getElementById('approved').value;
+    let approvedBoolean = approved == 'true' ? 'True' : 'False';
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + userData.token
+        },
+        body: JSON.stringify({
+            'ticket': ticket,
+            'comment': comment,
+            'files': files,
+            'approved': approvedBoolean
+        })
+    }
+
+    // Delete errors
+    deleteErrors();
+
+    try {
+        const response = await fetch(endpointNewTicket, options);
+        
+        if (response.status == 200) {
+            const data = await response.json();
+            alert(data.Message);
+        } else if (400) {
+            let dataError = await response.json();
+            for (let errorMessage in dataError) {
+                showErrors(errorMessage + ': ' + dataError[errorMessage], 'formResponseTicket');
+            }
+        } else if (response.status == 401) {
+            window.location.href = '../../../login';
+        } else if (response.status == 403) {
+            window.location.href = '../error403.html';
+        } else if (response.status == 404) {
+            window.location.href = '../error404.html';
+        }
+    } catch (error) {
+        console.error('Error', error);
+    }
+}
+
+// Verificar si el ticket se encuentra aprobado. Si es verdadero entonces no se mostrará el campo de texto enriquecido para respuesta.
+
 
 document.addEventListener('DOMContentLoaded', getTickets);
 

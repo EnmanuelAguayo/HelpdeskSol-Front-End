@@ -73,38 +73,7 @@ const pushContent = async () => {
         <div class="container-fluid">
             <!-- row -->
             <div class="row">
-    
-            <div class="col-sm-12">
-                <form id="formNewTicket" class="card bg-light p-4" method="POST">
-    
-                <div class="form-group">
-                    <label for="title">T&iacute;tulo</label>
-                    <input type="text" name="title" id="title" class="form-control" aria-describedby="helpId">
-                </div>
-    
-                <div class="form-group">
-                    <label for="serviceType">Tipo de servicio</label>
-                    <select class="form-control" name="serviceType" id="serviceType"></select>
-                </div>
-    
-                <div class="form-group">
-                    <label for="description">Descripci&oacute;n</label>
-                    <textarea name="description" id="description"></textarea>
-                    <input type="hidden" id="notes">
-                </div>
-    
-                <div class="form-group">
-                    <label for="files">Adjuntar archivos</label>
-                    <input type="file" name="files" id="files" class="form-control-file" multiple 
-                    accept="image/jpeg, image/jpg, image/png, image/gif, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .pdf">
-                </div>
-    
-                <div class="btn-grupo">
-                    <button type="button" name="submitNewTicket" id="submitNewTicket" class="btn btn-primary">Enviar solicitud</button>
-                    <button type="button" name="cancelNewTicket" id="cancelNewTicket" class="btn btn-danger">Cancelar</button>
-                </div>
-                </form>
-            </div>
+            <div class="col-sm-12" id="formContainerNewTicket"></div>
             </div>
         </div>
         <!-- /.row -->
@@ -112,6 +81,7 @@ const pushContent = async () => {
     </section>
     `;
     container.innerHTML = content;
+    renderFormNewTicket();
     tinyRender('textarea#description');
     document.getElementById('submitNewTicket').addEventListener('click', newTicket);
 };
@@ -128,7 +98,7 @@ const newTicket = async () => {
     const title = document.getElementById('title').value;
     const description = document.getElementById('notes').value;
     const serviceTypeId = document.getElementById('serviceType').value;
-    const files = document.getElementById('files').value;
+    const files = document.getElementById('files').files;
 
     const options = {
         method: 'POST',
