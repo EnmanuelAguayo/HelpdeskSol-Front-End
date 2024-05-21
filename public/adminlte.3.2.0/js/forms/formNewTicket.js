@@ -1,7 +1,7 @@
 const renderFormNewTicket = () => {
     const container = document.getElementById('formContainerNewTicket');
     const content = `
-        <form id="formNewTicket" class="card bg-light p-4" method="POST">
+        <form id="formNewTicket" class="card bg-light p-4" enctype="multipart/form-data" method="POST">
         
         <div class="form-group">
             <label for="title">T&iacute;tulo</label>

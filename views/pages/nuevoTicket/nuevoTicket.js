@@ -100,19 +100,22 @@ const newTicket = async () => {
     const serviceTypeId = document.getElementById('serviceType').value;
     const files = document.getElementById('files').files;
 
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('service_type_id', serviceTypeId);
+
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+
     const options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData.token
         },
-        body: JSON.stringify({
-            'title': title,
-            'description': description,
-            'service_type_id': serviceTypeId,
-            'files': files
-        })
-    }
+        body: formData
+    };
 
     // Delete errors
     deleteErrors();
@@ -123,6 +126,7 @@ const newTicket = async () => {
         if (response.status == 201) {
             const data = await response.json();
             alert(data.Message + ' Ticket: ' + data.Ticket + '. Soporte: ' + data.Soporte);
+            window.location.href = '../tickets';
         } else if (400) {
             let dataError = await response.json();
             for (let errorMessage in dataError) {

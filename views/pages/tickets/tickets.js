@@ -1,5 +1,5 @@
-// API listar tickets de cliente
-const getTickets = async () => {
+// API listar tickets de cliente y crear contenido (data) para la función (htmlListTickets)
+const listTickets = async () => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
 
@@ -16,6 +16,15 @@ const getTickets = async () => {
         }
     };
 
+    const stateSelectorColor = {
+        'Abierto': 'success',
+        'En progreso': 'warning',
+        'Solucionado': 'primary',
+        'Aprobado': 'info',
+        'Rechazado': 'danger',
+        'Cierre automático': 'danger',
+    };
+
     try {
         const response = await fetch(endpointListOpenTickets, options);
         
@@ -28,23 +37,30 @@ const getTickets = async () => {
                 subArray.push(dataRow.create_at);
                 subArray.push(dataRow.title);
                 subArray.push(dataRow.support);
+                
+                let statusKey = dataRow.state;
                 subArray.push(
                     `
-                        <span class='badge badge-pill badge-success'> ${dataRow.state} </span>
+                        <span class='badge badge-pill badge-${stateSelectorColor[statusKey]}'> ${dataRow.state} </span>
                     `
                 );
                 subArray.push(
                     `
-                        <button type='button' onClick='renderTicketContent(this, ${dataRow.ticket})' id='${dataRow.ticket}' value='${dataRow.approved}' class='btn btn-info'>
+                        <button type='button' 
+                            onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                            id='${dataRow.ticket}' 
+                            approved='${dataRow.approved}' 
+                            class='btn btn-info' 
+                            statusKey='${dataRow.state}'
+                            subState='${dataRow.sub_state}'
+                            description='${dataRow.description}'>
                             <i class='far fa-solid fa-eye'></i>
                         </button>
                     `
                 );
                 data.push(subArray);
             });
-            listTickets('dtIncidencias', data);
-            
-            
+            htmlListTickets('dtIncidencias', data);
         } else if (response.status == 400) {
             console.error(response.status);
         } else if (response.status == 401) {
@@ -61,8 +77,8 @@ const getTickets = async () => {
 
 };
 
-// Listar tickets en el front (Activos, En proceso, Resueltos)
-const listTickets = (nameDataTable, data) => {
+// HTML Listar tickets en el front (Activos, En proceso, Resueltos)
+const htmlListTickets = (nameDataTable, data) => {
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'incidencias');
     
@@ -123,24 +139,34 @@ const listTickets = (nameDataTable, data) => {
     renderDataTable(nameDataTable, data);
 };
 
-// Renderizar información del ticket (View and TimeLine) al dar click en el registro
-const renderTicketContent = (element, ticket) => {
+// HTML Renderizar información del ticket (View and TimeLine) al dar click en el registro
+const htmlViewTicket = (element, ticket) => {
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pageName', 'viewTicket');
+    const stateSelectorColor = {
+        'Abierto': 'success',
+        'En progreso': 'warning',
+        'Solucionado': 'primary',
+        'Aprobado': 'info',
+        'Rechazado': 'danger',
+        'Cierre automático': 'danger',
+    };
+    const statusKey = element.getAttribute('statusKey');
     const content = ` 
         <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
-                </div><!-- /.col -->
+                    <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
+                </div>
+                <!-- /.col -->
                 <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item">Ticket</li>
-                    <li class="breadcrumb-item active">Ver ticket</li>
-                </ol>
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item">Ticket</li>
+                        <li class="breadcrumb-item active">Ver ticket</li>
+                    </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -152,7 +178,8 @@ const renderTicketContent = (element, ticket) => {
             <div class="row">
                 <h3 id="stateTicket">
                     <strong>
-                        <span class="badge badge-pill badge-success" id="title"></span>
+                        <span class="badge badge-pill badge-${stateSelectorColor[statusKey]}" id="title"></span>
+                        <input type="hidden" value="" id="description">
                     </strong>
                 </h3>
                 <div class="col-sm-12 card bg-white p-4">
@@ -216,18 +243,32 @@ const renderTicketContent = (element, ticket) => {
     `
     container.innerHTML = content;
     viewTicket(ticket);
-    timeLine(ticket);
+    timeLine(ticket, element.getAttribute('description'));
 
-    // Renderizar formulario de respuesta en caso que el ticket aún se encuentre en estado pendiente de aceptación
-    console.log(element.value);
-    const verifyTicketApproved = element.value;
-    if (verifyTicketApproved == 'false') {
-        renderFormResponseTicket(ticket);
+    // Renderizar formulario de respuesta en caso que el ticket aún se encuentre en los siguientes estados (Abierto, En progreso, Solucionado)
+    const verifyTicketApproved = element.getAttribute('approved');
+
+    if (
+        statusKey == 'Abierto' ||
+        statusKey == 'En progreso' ||
+        statusKey == 'Solucionado'
+
+    ) {
+        let showApprovedCheck = false
+        if (statusKey == 'Solucionado') {
+            showApprovedCheck = true
+        }
+        renderFormResponseTicket(ticket, showApprovedCheck);
         tinyRender('textarea#comment');
-    } else if (verifyTicketApproved == 'true') {
+
+        document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
+    } else if (
+        verifyTicketApproved == 'true' ||
+        statusKey == 'Rechazado' ||
+        statusKey == 'Cierre Automático'
+    ) {
         document.getElementById('formContainerResponseTicket').style.display = 'none';
     }
-    document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
 };
 
 // API View ticket
@@ -261,6 +302,7 @@ const viewTicket = async (ticket) => {
             const category = document.getElementById('category');
             const serviceType = document.getElementById('serviceType');
             const support = document.getElementById('support');
+            const description = document.getElementById('description');
 
             // Set Dom elements
             title.textContent = `#Ticket ${data.ticket} - ${data.title}`;
@@ -271,6 +313,7 @@ const viewTicket = async (ticket) => {
             category.textContent = data.category;
             serviceType.textContent = data.service_type;
             support.textContent = data.support;
+            description.value = data.description;
 
             const strongTicketValue = document.createElement('strong');
             const spanTicketValue = document.createElement('span');
@@ -298,7 +341,7 @@ const viewTicket = async (ticket) => {
 }
 
 // API TimeLine
-const timeLine = async (ticket) => {
+const timeLine = async (ticket, ticketDescription) => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
     if (userData == null) {
@@ -407,7 +450,6 @@ const timeLine = async (ticket) => {
                         header.className = 'timeline-header';
                           
                         // Append content
-
                         if (
                             history.sub_state_simple == 'TC' ||
                             history.sub_state_simple == 'BC' ||
@@ -437,10 +479,15 @@ const timeLine = async (ticket) => {
                         timeLineItemDiv.appendChild(timeSpan);
                         timeLineItemDiv.appendChild(header);
                         
-                        if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
+                        // Mostrar comentarios
+                        if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2' || history.sub_state_simple == 'TC') {
                             const body = document.createElement('div');
                             body.className = 'timeline-body';
-                            body.innerHTML = history.comment;
+                            if (history.sub_state_simple == 'TC') {
+                                body.innerHTML = ticketDescription;
+                            } else {
+                                body.innerHTML = history.comment;
+                            }
                             timeLineItemDiv.appendChild(body);  
                         };
 
@@ -498,6 +545,7 @@ const timeLine = async (ticket) => {
                         timeLineItemDiv.appendChild(timeSpan);
                         timeLineItemDiv.appendChild(header);
                         
+                        // Mostrar comentarios
                         if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
                             const body = document.createElement('div');
                             body.className = 'timeline-body';
@@ -509,7 +557,6 @@ const timeLine = async (ticket) => {
                         elementDiv.appendChild(timeLineItemDiv);
                         timeLineContainer.appendChild(elementDiv);
                     }
-                   
                 });
             
             // End TimeLine
@@ -546,22 +593,31 @@ const responseTicket = async () => {
     const ticket = document.getElementById('ticket').value;
     const comment = document.getElementById('notes').value;
     const files = document.getElementById('files').files;
-    const approved = document.getElementById('approved').value;
-    let approvedBoolean = approved == 'true' ? 'True' : 'False';
+    let approved = "";
+
+    try {
+        approved = document.getElementById('approved').checked;
+    } catch (error) {
+        approved = "false";
+    }
+
+    console.info(approved);
+    const formData = new FormData();
+    formData.append('ticket', ticket);
+    formData.append('comment', comment);
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+    formData.append('approved', approved);
+
 
     const options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + userData.token
         },
-        body: JSON.stringify({
-            'ticket': ticket,
-            'comment': comment,
-            'files': files,
-            'approved': approvedBoolean
-        })
-    }
+        body: formData
+    };
 
     // Delete errors
     deleteErrors();
@@ -569,9 +625,10 @@ const responseTicket = async () => {
     try {
         const response = await fetch(endpointNewTicket, options);
         
-        if (response.status == 200) {
+        if (response.status == 201) {
             const data = await response.json();
             alert(data.Message);
+            window.location.href = '../tickets';
         } else if (400) {
             let dataError = await response.json();
             for (let errorMessage in dataError) {
@@ -589,8 +646,5 @@ const responseTicket = async () => {
     }
 }
 
-// Verificar si el ticket se encuentra aprobado. Si es verdadero entonces no se mostrará el campo de texto enriquecido para respuesta.
-
-
-document.addEventListener('DOMContentLoaded', getTickets);
+document.addEventListener('DOMContentLoaded', listTickets);
 

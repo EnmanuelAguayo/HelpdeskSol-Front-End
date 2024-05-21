@@ -60,9 +60,9 @@ const mainAside = async () => {
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../ticketsAbiertos" class="nav-link">
+                  <a href="../tickets" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Tickets abiertos</p>
+                    <p>Tickets</p>
                   </a>
                 </li>
               </ul>

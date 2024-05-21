@@ -1,7 +1,7 @@
-const renderFormResponseTicket = (ticket, verifyTicketApproved) => {
+const renderFormResponseTicket = (ticket, showApprovedCheck) => {
     const container = document.getElementById('formContainerResponseTicket');
     const content = `
-        <form action="#" id="formResponseTicket" class="p-4">
+        <form id="formResponseTicket" class="p-4" enctype="multipart/form-data" method="POST">
             <input type="hidden" id="ticket">
             <div class="form-group">
                 <label for="comment">Escribir una respuesta</label>
@@ -15,7 +15,7 @@ const renderFormResponseTicket = (ticket, verifyTicketApproved) => {
                 accept="image/jpeg, image/jpg, image/png, image/gif, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .pdf">
             </div>
 
-            <div class="row">
+            <div class="row" id="approvedDisplay">
                 <div class="offset-6 col-6">
                     <div class="form-group text-right">
                         <div class="custom-control custom-checkbox custom-control-inline">
@@ -32,5 +32,10 @@ const renderFormResponseTicket = (ticket, verifyTicketApproved) => {
         </form>
     `;
     container.innerHTML = content;
+    if (showApprovedCheck == false) {
+        const approvedDisplay = document.getElementById('approvedDisplay');
+
+        approvedDisplay.remove();
+    }
     document.getElementById('ticket').value = ticket;
 };
