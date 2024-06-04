@@ -8,6 +8,8 @@ const bienvenido = async () => {
   
   const endpointInfoCustomer = 'http://127.0.0.1:8000/info/customer';
   const endpointInfoDevices = 'http://127.0.0.1:8000/info/customer/devices';
+  const endpointSummaryTickets = 'http://127.0.0.1:8000/ticket/summary/customer/' + userData.id;
+  
   const options = {
     method: 'GET',
     headers: {
@@ -55,7 +57,51 @@ const bienvenido = async () => {
       }
   } catch (error){
     console.error(error);
-  } 
+  }
+  
+  // Summary tickets
+  try {
+    const listIncidencias = document.getElementById('listIncidencias');
+    const response = await fetch(endpointSummaryTickets, options);
+    const optionsSummary = ['open_count', 'in_progress_count', 'solved_count', 'approved_count', 'rejected_count'];
+  
+    if ( response.status == 200) {
+      let data = await response.json();
+      const contentSummary = `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Abiertos
+          <span class="badge badge-success badge-pill">${data.open_count}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          En progreso
+          <span class="badge badge-warning badge-pill">${data.in_progress_count}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Solucionados
+          <span class="badge badge-primary badge-pill">${data.solved_count}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Aprobados
+          <span class="badge badge-info badge-pill">${data.approved_count}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Rechazados
+          <span class="badge badge-danger badge-pill">${data.rejected_count}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Cerrados por sistema
+          <span class="badge badge-danger badge-pill">${data.closed_system_count}</span>
+        </li>
+    `;
+    listIncidencias.innerHTML = contentSummary;
+    } else if (response.status == 404) {
+      listIncidencias.innerHTML = '<p>Contenido no disponible</p>';
+    } else if (response.status == 403) {
+      listIncidencias.innerHTML == '<p>No posee permiso para visualizar el contenido de este apartado.</p>';
+    }
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 const pushContent = async () => {
@@ -113,20 +159,7 @@ const pushContent = async () => {
               <div class="card-header">
                 <h5 class="text-center"><a href="#" class="link">Incidencias</a></h5>
               </div>
-              <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Abiertas
-                  <span class="badge badge-success badge-pill">14</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  En proceso
-                  <span class="badge badge-warning badge-pill">2</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Cerradas
-                  <span class="badge badge-danger badge-pill">2</span>
-                </li>
-              </ul>
+              <ul class="list-group" id="listIncidencias"></ul>
             </div>
           </div>
           <!-- /. right-->
