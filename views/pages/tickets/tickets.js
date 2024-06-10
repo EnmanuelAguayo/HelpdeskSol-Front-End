@@ -407,27 +407,7 @@ const timeLine = async (ticket, ticketDescription) => {
 
                         /*
                             Crear elemento timeline-item el color del mismo dependerá si la respuesta es del cliente o del soporte.
-                            # User
-                            ('TC', 'Ticket creado'),
-                            ('BC', 'Ticket en bandeja del cliente'),
-                            ('LC', 'Cliente abrió el ticket'),
-                            ('TA', 'Ticket aprobado por el cliente'),
-                            ('CL', 'Ticket calificado por el cliente'),
-
-                            # Support
-                            ('AS', 'Ticket asignado a soporte'),
-                            ('BS', 'Ticket en bandeja del soporte'),
-                            ('LS', 'Soporte abrió el ticket'),
-                            ('SS', 'Ticket se marcó como solucionado por soporte'),
-                            ('R', 'Ticket Rechazado por soporte'),
-                            ('RR', 'Ticket reasignado a soporte'),
-
-                            # Automatic
-                            ('CA', 'Este ticket se cerró automáticamente porque han pasado 2 días sin respuesta del cliente desde la solución por parte de soporte.'),
-                            ('R1', 'Respuesta de cliente'),
-                            ('R2', 'Respuesta de soporte'),
-
-                            Toda respuesta relacionada al cliente será de color azul y del soporte color amarillo. Al aprobar el ticket será de color verde.
+                            Toda respuesta relacionada al cliente será de color azul y del soporte color amarillo.
                         */
                                                     
                         // Crear sub contenido
@@ -482,11 +462,98 @@ const timeLine = async (ticket, ticketDescription) => {
                         // Mostrar comentarios
                         if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2' || history.sub_state_simple == 'TC') {
                             const body = document.createElement('div');
+                            
                             body.className = 'timeline-body';
                             if (history.sub_state_simple == 'TC') {
                                 body.innerHTML = ticketDescription;
                             } else {
-                                body.innerHTML = history.comment;
+                                body.innerHTML = history.comment.comment;
+                                
+                                // Mostrar Files
+                                if (history.comment.files.length > 0) {
+                                    const elementPFile = document.createElement('p');
+                                    const urlFiles = history.comment.files;
+                                    
+                                    // Iterar files
+                                    urlFiles.forEach(file => {
+                                        // Crear elemento aHref y agregar link para visualizar archivo en una nueva pestaña
+                                        const elementAHref = document.createElement('a');
+                                        const elementSpanNameFile = document.createElement('span');
+                                        const elementBr = document.createElement('br');
+                                        elementBr.style.marginBottom = '8%';
+                                        elementAHref.setAttribute('href', 'http://127.0.0.1:8000' + file.url);
+                                        elementAHref.setAttribute('target', 'blank');
+
+                                        // Crear elementos de imagen y modificar su tamaño 
+                                        const elementImgFile = document.createElement('img');
+                                        elementImgFile.setAttribute('width', '10%');
+                                        
+                                        if (
+                                            file.url.split('.')[1] == 'png' ||
+                                            file.url.split('.')[1] == 'jpg' ||
+                                            file.url.split('.')[1] == 'jpeg' ||
+                                            file.url.split('.')[1] == 'gif' 
+                                        ) {
+                                            
+                                            elementImgFile.setAttribute('src', 'http://127.0.0.1:8000' + file.url);
+                                            
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'doc' ||
+                                            file.url.split('.')[1] == 'docx'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/word.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'xls' ||
+                                            file.url.split('.')[1] == 'xlsx' 
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/excel.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'ppt' ||
+                                            file.url.split('.')[1] == 'pptx'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/powerpoint.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'pdf'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/pdf.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        }
+                                    })
+                                    body.appendChild(elementPFile);
+                                }
                             }
                             timeLineItemDiv.appendChild(body);  
                         };
@@ -549,8 +616,94 @@ const timeLine = async (ticket, ticketDescription) => {
                         if (history.sub_state_simple == 'R1' || history.sub_state_simple == 'R2') {
                             const body = document.createElement('div');
                             body.className = 'timeline-body';
-                            body.innerHTML = history.comment;
-                            timeLineItemDiv.appendChild(body);  
+                            body.innerHTML = history.comment.comment;
+                            timeLineItemDiv.appendChild(body);
+                            
+                            // Mostrar Files
+                            if (history.comment.files.length > 0) {
+                                const elementPFile = document.createElement('p');
+                                const urlFiles = history.comment.files;
+                                
+                                // Iterar files
+                                urlFiles.forEach(file => {
+                                    // Crear elemento aHref y agregar link para visualizar archivo en una nueva pestaña
+                                    const elementAHref = document.createElement('a');
+                                    const elementSpanNameFile = document.createElement('span');
+                                    const elementBr = document.createElement('br');
+                                    elementBr.style.marginBottom = '8%';
+                                    elementAHref.setAttribute('href', 'http://127.0.0.1:8000' + file.url);
+                                    elementAHref.setAttribute('target', 'blank');
+
+                                    // Crear elementos de imagen y modificar su tamaño 
+                                    const elementImgFile = document.createElement('img');
+                                    elementImgFile.setAttribute('width', '10%');
+                                    
+                                    if (
+                                        file.url.split('.')[1] == 'png' ||
+                                        file.url.split('.')[1] == 'jpg' ||
+                                        file.url.split('.')[1] == 'jpeg' ||
+                                        file.url.split('.')[1] == 'gif' 
+                                    ) {
+                                        
+                                        elementImgFile.setAttribute('src', 'http://127.0.0.1:8000' + file.url);
+                                        
+                                        // Agregar elemento
+                                        elementAHref.appendChild(elementImgFile);
+                                        elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                        elementAHref.appendChild(elementSpanNameFile);
+                                        elementPFile.appendChild(elementBr);
+                                        elementPFile.appendChild(elementAHref);
+                                    } else if (
+                                        file.url.split('.')[1] == 'doc' ||
+                                        file.url.split('.')[1] == 'docx'
+                                    ) {
+                                        elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/word.png');
+
+                                        // Agregar elemento
+                                        elementAHref.appendChild(elementImgFile);
+                                        elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                        elementAHref.appendChild(elementSpanNameFile);
+                                        elementPFile.appendChild(elementBr);
+                                        elementPFile.appendChild(elementAHref);
+                                    } else if (
+                                        file.url.split('.')[1] == 'xls' ||
+                                        file.url.split('.')[1] == 'xlsx' 
+                                    ) {
+                                        elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/excel.png');
+
+                                        // Agregar elemento
+                                        elementAHref.appendChild(elementImgFile);
+                                        elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                        elementAHref.appendChild(elementSpanNameFile);
+                                        elementPFile.appendChild(elementBr);
+                                        elementPFile.appendChild(elementAHref);
+                                    } else if (
+                                        file.url.split('.')[1] == 'ppt' ||
+                                        file.url.split('.')[1] == 'pptx'
+                                    ) {
+                                        elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/powerpoint.png');
+
+                                        // Agregar elemento
+                                        elementAHref.appendChild(elementImgFile);
+                                        elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                        elementAHref.appendChild(elementSpanNameFile);
+                                        elementPFile.appendChild(elementBr);
+                                        elementPFile.appendChild(elementAHref);
+                                    } else if (
+                                        file.url.split('.')[1] == 'pdf'
+                                    ) {
+                                        elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/pdf.png');
+
+                                        // Agregar elemento
+                                        elementAHref.appendChild(elementImgFile);
+                                        elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                        elementAHref.appendChild(elementSpanNameFile);
+                                        elementPFile.appendChild(elementBr);
+                                        elementPFile.appendChild(elementAHref);
+                                    }
+                                })
+                                body.appendChild(elementPFile);
+                            }
                         };
 
                         elementDiv.appendChild(elementI);
@@ -601,7 +754,6 @@ const responseTicket = async () => {
         approved = "false";
     }
 
-    console.info(approved);
     const formData = new FormData();
     formData.append('ticket', ticket);
     formData.append('comment', comment);
