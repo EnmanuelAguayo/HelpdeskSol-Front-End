@@ -37,13 +37,43 @@ const bienvenido = async () => {
 
         // Dispositivos
         let dataDevices = await responseDevices.json();
-        for (let index = 0; index < dataDevices.length; index++) {
-          const element = dataDevices[index];
-          let infoDevices = `
-            <strong>${element.description}</strong> - ${element.type_name} </br>
-          `;
-          document.getElementById('infoDevices').innerHTML = infoDevices;
+        let infoDevices = "";
+        
+        if (dataDevices) {
+
+          for (let index = 0; index < dataDevices.length; index++) {
+            const device = dataDevices[index];
+
+            if (device.image == null) {
+                infoDevices += `
+                
+                  <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
+                    <div class="card-header">
+                      <strong>${device.description}</strong> - ${device.type_name}
+                    </div>
+                    <div class="card-body">
+                      <img class="img-fluid" src="../../../public/adminlte.3.2.0/img/device.png">
+                    </div>
+                  </div>
+                `;
+            } else {
+                infoDevices += `
+                  <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
+                    <div class="card-header">
+                      <strong>${device.description}</strong> - ${device.type_name}
+                    </div>
+                    <div class="card-body">
+                      <img class="img-fluid" src="${device.image}">
+                    </div>
+                  </div>
+                `;
+            }
+          }
+        } else {
+          infoDevices = '<p class="text-secondary">No hay dispositivos agregados.</p>'
         }
+
+        document.getElementById('infoDevices').innerHTML = infoDevices;
         
       } else if (response.status == 401) {
         sessionStorage.clear();
@@ -143,12 +173,10 @@ const pushContent = async () => {
             <div class="col-sm-12 col-md-12 col-lg-12 col-lx-12">
               <div class="card">
                 <div class="card-header">
-                  <h5 class="text-center">Dispositivo</h5>
+                  <h5 class="text-center">Dispositivos</h5>
                 </div>
                 <div class="card-body">
-                  <div class="row">
-                    <p id="infoDevices" class="m-3"></p>
-                  </div>
+                  <div id="infoDevices" class="row"></div>
                 </div>
               </div>
             </div>
