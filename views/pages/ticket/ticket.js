@@ -2,7 +2,7 @@
 
 const pushContent = async () => {
   const container = document.getElementById('mainDinamic');
-  container.setAttribute('pageName', 'timeLine');
+  container.setAttribute('pagename', 'timeLine');
   const content = ` 
   <!-- Content Header (Page header) -->
   <div class="content-header">

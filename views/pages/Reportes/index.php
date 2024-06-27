@@ -20,7 +20,7 @@
 
   <section class="content" style="width: 1500px">
     <div class="container-fluid">
-      <iframe width="1000px" height="750px" src="https://app.powerbi.com/view?r=eyJrIjoiZDI0ZWFiZjQtNDAzZi00NjZiLTg2YTctZmUzZGRkNjZmNTMyIiwidCI6IjA0NWY5ZGI1LWEyNmYtNGRmMy1iNGQyLWYyZmIxMTE5ZWJiOCIsImMiOjR9&pageName=ReportSectionf9b9f0a00811d7710734" title="description"></iframe>
+      <iframe width="1000px" height="750px" src="https://app.powerbi.com/view?r=eyJrIjoiZDI0ZWFiZjQtNDAzZi00NjZiLTg2YTctZmUzZGRkNjZmNTMyIiwidCI6IjA0NWY5ZGI1LWEyNmYtNGRmMy1iNGQyLWYyZmIxMTE5ZWJiOCIsImMiOjR9&pagename=ReportSectionf9b9f0a00811d7710734" title="description"></iframe>
     </div>
   </section>
   

@@ -9,7 +9,7 @@ const renderDataTable = (nameDataTable, data) => {
     "info": true,
     "autoWidth": false,
     "responsive": true,
-    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
     order: [1, 'desc']
   }).buttons().container().appendTo('#' + nameDataTable + '_wrapper' + ' .col-md-6:eq(0)');
 };

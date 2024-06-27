@@ -4,7 +4,7 @@
 //        
 //        // Capturar nombre actual del contenido
 //        const actualContent = document.getElementById('mainDinamic');
-//        const actualContentName = actualContent.getAttribute('pageName').toLowerCase();
+//        const actualContentName = actualContent.getAttribute('pagename').toLowerCase();
 //
 //        // Eliminar script actual
 //        if (actualContentName != linkPage.toLowerCase()) {

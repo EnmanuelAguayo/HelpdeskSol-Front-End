@@ -106,7 +106,7 @@ const bienvenido = async () => {
 
 const pushContent = async () => {
   const container = document.getElementById('mainDinamic');
-  container.setAttribute('pageName', 'bienvenido');
+  container.setAttribute('pagename', 'bienvenido');
   const content = ` 
     <!-- Content Header (Page header) -->
     <div class="content-header">

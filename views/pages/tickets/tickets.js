@@ -7,7 +7,7 @@ const listTickets = async () => {
         window.location.href = '../../../login';
     }
 
-    const endpointListOpenTickets = 'http://127.0.0.1:8000/ticket/list/customer';
+    const endpointListTickets = 'http://127.0.0.1:8000/ticket/list/customer';
     const options = {
         method: 'GET',
         headers: {
@@ -26,41 +26,413 @@ const listTickets = async () => {
     };
 
     try {
-        const response = await fetch(endpointListOpenTickets, options);
+        const response = await fetch(endpointListTickets, options);
         
         if (response.status == 200) {
             let dataTicket = await response.json();
-            let data = [];
+            let dataAbiertos = [];
+            let dataProgreso = [];
+            let dataSolucionado = [];
+            let dataAprobado = [];
+            let dataRechazado = [];
+            let dataCierreAut = [];
+
             dataTicket.forEach(dataRow => {
-                let subArray = [];
-                subArray.push(`#${dataRow.ticket}`);
-                subArray.push(dataRow.create_at);
-                subArray.push(dataRow.title);
-                subArray.push(dataRow.support);
-                
-                let statusKey = dataRow.state;
-                subArray.push(
-                    `
-                        <span class='badge badge-pill badge-${stateSelectorColor[statusKey]}'> ${dataRow.state} </span>
-                    `
-                );
-                subArray.push(
-                    `
-                        <button type='button' 
-                            onClick='htmlViewTicket(this, ${dataRow.ticket})' 
-                            id='${dataRow.ticket}' 
-                            approved='${dataRow.approved}' 
-                            class='btn btn-info' 
-                            statusKey='${dataRow.state}'
-                            subState='${dataRow.sub_state}'
-                            description='${dataRow.description}'>
-                            <i class='far fa-solid fa-eye'></i>
-                        </button>
-                    `
-                );
-                data.push(subArray);
+                switch (dataRow.state) {
+                    case 'Abierto':
+                        let idUnReadAbierto = []
+                        let subArrayAbiertos = [];
+                        subArrayAbiertos.push(`#${dataRow.ticket}`);
+                        subArrayAbiertos.push(dataRow.title);
+                        
+                        if (dataRow.unread_history != null) {
+                            let message = "";
+
+                            for (let i=0; i < dataRow.unread_history.length; i++) {
+                                idUnReadAbierto.push(dataRow.unread_history[i].id);
+                                message += 
+                                `
+                                <span class="badge badge-pill badge-secondary"> ${dataRow.unread_history[i].sub_state}</span><br>
+                                `
+                            }
+                            subArrayAbiertos.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'
+                                        ids-unreads='${idUnReadAbierto}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="mt-2 btn btn-dark btn-sm btn-message-progress" data-toggle="modal" data-target="#modal-message-progress${dataRow.ticket}">
+                                        <i class="nav-icon far fa-envelope"></i> ${dataRow.unread_history.length}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal-message-progress${dataRow.ticket}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Notificaci&oacute;n de movimientos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ${message}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            );
+                        }else if (dataRow.unread_history == null) {
+                            subArrayAbiertos.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                `
+                            );
+                            
+                        }
+                        dataAbiertos.push(subArrayAbiertos);
+                        break;
+                    case 'En progreso':
+                        let idUnReadProgreso = [];
+                        let subArrayProgreso = [];
+                        subArrayProgreso.push(`#${dataRow.ticket}`);
+                        subArrayProgreso.push(dataRow.title);
+                        
+                        if (dataRow.unread_history != null) {
+                            let message = "";
+                            for (let i=0; i < dataRow.unread_history.length; i++) {
+                                idUnReadProgreso.push(dataRow.unread_history[i].id);
+                                message += 
+                                `
+                                <span class="badge badge-pill badge-secondary"> ${dataRow.unread_history[i].sub_state}</span><br>
+                                `
+                            }
+                            subArrayProgreso.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'
+                                        ids-unreads='${idUnReadProgreso}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="mt-2 btn btn-dark btn-sm btn-message-progress" data-toggle="modal" data-target="#modal-message-progress${dataRow.ticket}">
+                                        <i class="nav-icon far fa-envelope"></i> ${dataRow.unread_history.length}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal-message-progress${dataRow.ticket}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Notificaci&oacute;n de movimientos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ${message}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            );
+                        }else {
+                            subArrayProgreso.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                `
+                            );
+                        }
+                        dataProgreso.push(subArrayProgreso);
+                        break;
+                    case 'Solucionado':
+                        let idUnReadSolucionado = [];
+                        let subArraySolucionado = [];
+                        subArraySolucionado.push(`#${dataRow.ticket}`);
+                        subArraySolucionado.push(dataRow.title);
+                        if (dataRow.unread_history != null) {
+                            let message = "";
+                            for (let i=0; i < dataRow.unread_history.length; i++) {
+                                idUnReadSolucionado.push(dataRow.unread_history[i].id);
+                                message += 
+                                `
+                                <span class="badge badge-pill badge-secondary"> ${dataRow.unread_history[i].sub_state}</span><br>
+                                `
+                            }
+                            subArraySolucionado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'
+                                        ids-unreads='${idUnReadSolucionado}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="mt-2 btn btn-dark btn-sm btn-message-progress" data-toggle="modal" data-target="#modal-message-progress${dataRow.ticket}">
+                                        <i class="nav-icon far fa-envelope"></i> ${dataRow.unread_history.length}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal-message-progress${dataRow.ticket}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Notificaci&oacute;n de movimientos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ${message}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            )
+                        }else {
+                            subArraySolucionado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                `
+                            );
+                        }
+                        dataSolucionado.push(subArraySolucionado);
+                        break;
+                    case 'Aprobado':
+                        let idUnReadAprobado = [];
+                        let subArrayAprobado = [];
+                        subArrayAprobado.push(`#${dataRow.ticket}`);
+                        subArrayAprobado.push(dataRow.title);
+                        if (dataRow.unread_history != null) {
+                            let message = "";
+                            for (let i=0; i < dataRow.unread_history.length; i++) {
+                                idUnReadAprobado.push(dataRow.unread_history[i].id);
+                                message += 
+                                `
+                                <span class="badge badge-pill badge-secondary"> ${dataRow.unread_history[i].sub_state}</span><br>
+                                `
+                            }
+                            subArrayAprobado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'
+                                        ids-unreads='${idUnReadAprobado}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="mt-2 btn btn-dark btn-sm btn-message-progress" data-toggle="modal" data-target="#modal-message-progress${dataRow.ticket}">
+                                        <i class="nav-icon far fa-envelope"></i> ${dataRow.unread_history.length}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal-message-progress${dataRow.ticket}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Notificaci&oacute;n de movimientos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ${message}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            )
+                        }else {
+                            subArrayAprobado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                `
+                            );
+                        }
+                        dataAprobado.push(subArrayAprobado);
+                        break;
+                    case 'Rechazado':
+                        let idUnReadRechazado = [];
+                        let subArrayRechazado = [];
+                        subArrayRechazado.push(`#${dataRow.ticket}`);
+                        subArrayRechazado.push(dataRow.title);
+        
+                        if (dataRow.unread_history != null) {
+                            let message = "";
+                            for (let i=0; i < dataRow.unread_history.length; i++) {
+                                idUnReadRechazado.push(dataRow.unread_history[i].id);
+                                message += 
+                                `
+                                <span class="badge badge-pill badge-secondary"> ${dataRow.unread_history[i].sub_state}</span><br>
+                                `
+                            }
+                            subArrayRechazado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'
+                                        ids-unreads='${idUnReadRechazado}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="mt-2 btn btn-dark btn-sm btn-message-progress" data-toggle="modal" data-target="#modal-message-progress${dataRow.ticket}">
+                                        <i class="nav-icon far fa-envelope"></i> ${dataRow.unread_history.length}
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal-message-progress${dataRow.ticket}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Notificaci&oacute;n de movimientos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ${message}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                            );
+                        }else {
+                            subArrayRechazado.push(
+                                `
+                                    <button type='button' 
+                                        onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                        id='${dataRow.ticket}' 
+                                        approved='${dataRow.approved}' 
+                                        class='btn btn-info' 
+                                        statusKey='${dataRow.state}'
+                                        subState='${dataRow.sub_state}'
+                                        description='${dataRow.description}'>
+                                        <i class='far fa-solid fa-eye'></i>
+                                    </button>
+                                `
+                            );
+                        }
+                        dataRechazado.push(subArrayRechazado);
+                        
+                        break;
+                    case 'Cierre automático':
+                        let subArrayCierreAut = [];
+                        subArrayCierreAut.push(`#${dataRow.ticket}`);
+                        subArrayCierreAut.push(dataRow.title);
+                        subArrayCierreAut.push(
+                            `
+                                <button type='button' 
+                                    onClick='htmlViewTicket(this, ${dataRow.ticket})' 
+                                    id='${dataRow.ticket}' 
+                                    approved='${dataRow.approved}' 
+                                    class='btn btn-info' 
+                                    statusKey='${dataRow.state}'
+                                    subState='${dataRow.sub_state}'
+                                    description='${dataRow.description}'>
+                                    <i class='far fa-solid fa-eye'></i>
+                                </button>
+                            `
+                        );
+                        dataCierreAut.push(subArrayCierreAut);
+                        break;        
+                    default:
+                        break;
+                }
             });
-            htmlListTickets('dtIncidencias', data);
+            let dictDataTable = {
+                'data_table': [
+                    'dtAbiertos','dtProgreso', 'dtSolucionado', 'dtAprobado', 'dtRechazado', 'dtCierreAut'
+                ],
+                'data': [
+                    dataAbiertos, dataProgreso, dataSolucionado, dataAprobado, dataRechazado, dataCierreAut
+                ]
+            }
+            htmlListTickets(dictDataTable['data_table'], dictDataTable['data']);
         } else if (response.status == 400) {
             console.error(response.status);
         } else if (response.status == 401) {
@@ -80,7 +452,7 @@ const listTickets = async () => {
 // HTML Listar tickets en el front (Activos, En proceso, Resueltos)
 const htmlListTickets = (nameDataTable, data) => {
     const container = document.getElementById('mainDinamic');
-    container.setAttribute('pageName', 'incidencias');
+    container.setAttribute('pagename', 'tickets');
     
     const content = `
         <!-- Content Header (Page header) -->
@@ -88,13 +460,12 @@ const htmlListTickets = (nameDataTable, data) => {
         <div class="container-fluid">
             <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0"><i class="nav-icon fas fa-laptop-medical"></i> Incidencias</h1>
+                <h1 class="m-0">Tickets</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
                 <li class="breadcrumb-item">Tickets</li>
-                <li class="breadcrumb-item active">Tickets abiertos</li>
                 </ol>
             </div><!-- /.col -->
             </div><!-- /.row -->
@@ -106,28 +477,134 @@ const htmlListTickets = (nameDataTable, data) => {
         <div class="container-fluid">
             <!-- row -->
             <div class="row">
-            <div class="col-sm-12">
-                <div class="card">
-                <!-- /.card-header -->
-                <div class="card-body">
-                    <table id="dtIncidencias" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                        <th>Nro. ticket</th>
-                        <th>Fecha de creaci&oacute;n</th>
-                        <th>T&iacute;tulo</th>
-                        <th>Asignado a</th>
-                        <th>Estado</th>
-                        <th>Ver ticket</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                    </table>
-                </div>
-                <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
+            <div class="col-sm-12" style="overflow-x: auto !important; height: 500vh">
+                <!-- Kanban -->
+                    <div class="scroll-div bg-light p-3 border">
+                        <div class="content-scroll">
+                            <div class="content-wrapper kanban" style="min-height: 751px; margin-left: 0px !important">
+                                <section class="content pb-3">
+                                    <div class="container-fluid h-100">
+                                        <div class="card card-row card-primary" style="height:auto;">
+                                            <div class="card-header">
+                                                <h3 class="card-title">
+                                                    Abiertos
+                                                </h3>
+                                            </div>
+                                            <div id="abierto" class="card-body">
+                                                <table id="dtAbiertos" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card card-row card-warning" style="height:auto;">
+                                            <div class="card-header">
+                                                <h3 class="card-title">
+                                                    En Progreso
+                                                </h3>
+                                            </div>
+                                            <div id="progreso" class="card-body">
+                                                <table id="dtProgreso" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card card-row card-info" style="height:auto;">
+                                            <div class="card-header bg-info">
+                                                <h3 class="card-title">
+                                                    Solucionado por soporte
+                                                </h3>
+                                            </div>
+                                            <div id="solucionado" class="card-body">
+                                                <table id="dtSolucionado" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card card-row card-success" style="height:auto;">
+                                            <div class="card-header">
+                                                <h3 class="card-title">
+                                                    Aprobados
+                                                </h3>
+                                            </div>
+                                            <div id="aprobado" class="card-body">
+                                                <table id="dtAprobado" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card card-row card-danger" style="height:auto;">
+                                            <div class="card-header">
+                                                <h3 class="card-title">
+                                                    Rechazados
+                                                </h3>
+                                            </div>
+                                            <div id="rechazado" class="card-body">
+                                                <table id="dtRechazado" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card card-row card-danger" style="height:auto;">
+                                            <div class="card-header">
+                                                <h3 class="card-title">
+                                                    Cierre autom&aacute;tico
+                                                </h3>
+                                            </div>
+                                            <div id="cierreAut" class="card-body">
+                                                <table id="dtCierreAut" class="table table-bordered table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nro. ticket</th>
+                                                            <th>T&iacute;tulo</th>
+                                                            <th>Ver ticket</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div> 
+                <!-- kanban -->
+            </div><!-- /.col -->
             </div>
         </div>
         <!-- /.container-fluid -->
@@ -135,139 +612,155 @@ const htmlListTickets = (nameDataTable, data) => {
     `;
 
     container.innerHTML = content;
+    for (let i=0; i<6; i++) {
+        renderDataTable(nameDataTable[i], data[i]);
+    }
     
-    renderDataTable(nameDataTable, data);
 };
 
 // HTML Renderizar información del ticket (View and TimeLine) al dar click en el registro
-const htmlViewTicket = (element, ticket) => {
+
+const htmlViewTicket = (element, ticket) => { //Si la página viewticket cargó correctamente usamos el parámetro ticket para enviar las historias no leídas
+   
     const container = document.getElementById('mainDinamic');
-    container.setAttribute('pageName', 'viewTicket');
-    const stateSelectorColor = {
-        'Abierto': 'success',
-        'En progreso': 'warning',
-        'Solucionado': 'primary',
-        'Aprobado': 'info',
-        'Rechazado': 'danger',
-        'Cierre automático': 'danger',
-    };
-    const statusKey = element.getAttribute('statusKey');
-    const content = ` 
-        <!-- Content Header (Page header) -->
-        <div class="content-header">
-            <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item">Ticket</li>
-                        <li class="breadcrumb-item active">Ver ticket</li>
-                    </ol>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
-        </div>
-        <!-- /.content-header -->
+    const checkpagename = container.getAttribute('pagename');
+    
+    if (checkpagename == 'viewTicket') { // Comprobamos si la página de vista ha cargado correctamente
+        check_target_and_scroll();
 
-        <section class="content">
-            <div class="container-fluid">
-            <div class="row">
-                <h3 id="stateTicket">
-                    <strong>
-                        <span class="badge badge-pill badge-${stateSelectorColor[statusKey]}" id="title"></span>
-                        <input type="hidden" value="" id="description">
-                    </strong>
-                </h3>
-                <div class="col-sm-12 card bg-white p-4">
-                    <div class="row">
-                        <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
-                        <div class="row">
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Estado:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="state"></div>
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Prioridad:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="priority"></div>
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Fecha de creaci&oacute;n:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="createAt"></div>
-                        </div>
-                        </div>
-                        <!-- /. left -->
-                        <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
-                        <div class="row">
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Usuario:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="user"></div>
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Categor&iacute;a:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="category"></div>
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Tipo de servicio:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="serviceType"></div>
-                            <!-- list-group -->
-                            <div class="col-6 mb-2">
-                                <b>Asignado a:</b>
-                            </div>
-                            <div class="col-6 mb-2" id="support"></div>
-                        </div>
-                        </div>
-                        <!-- /. right -->
-                    </div>
-                </div>
-                <div class="col-sm-12 card p-2">
-                <!-- The timeline -->
-                <div class="timeline timeline-inverse"></div>
-                </div>
-                <div class="col-sm-12 card p-2" id="formContainerResponseTicket"></div>
-            </div>
-            </div>
-            <!-- /.container-fluid -->
-        </section>
-    `
-    container.innerHTML = content;
-    viewTicket(ticket);
-    timeLine(ticket, element.getAttribute('description'));
-
-    // Renderizar formulario de respuesta en caso que el ticket aún se encuentre en los siguientes estados (Abierto, En progreso, Solucionado)
-    const verifyTicketApproved = element.getAttribute('approved');
-
-    if (
-        statusKey == 'Abierto' ||
-        statusKey == 'En progreso' ||
-        statusKey == 'Solucionado'
-
-    ) {
-        let showApprovedCheck = false
-        if (statusKey == 'Solucionado') {
-            showApprovedCheck = true
+        if (element) {
+            endPointReadsHistories(element);
         }
-        renderFormResponseTicket(ticket, showApprovedCheck);
-        tinyRender('textarea#comment');
 
-        document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
-    } else if (
-        verifyTicketApproved == 'true' ||
-        statusKey == 'Rechazado' ||
-        statusKey == 'Cierre Automático'
-    ) {
-        document.getElementById('formContainerResponseTicket').style.display = 'none';
+    } else {
+        container.setAttribute('pagename', 'viewTicket');
+        
+        const stateSelectorColor = {
+            'Abierto': 'success',
+            'En progreso': 'warning',
+            'Solucionado': 'primary',
+            'Aprobado': 'info',
+            'Rechazado': 'danger',
+            'Cierre automático': 'danger',
+        };
+        const statusKey = element.getAttribute('statusKey');
+        const content = ` 
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"><i class="nav-icon fas fa-clock"></i> Ticket</h1>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item">Ticket</li>
+                            <li class="breadcrumb-item active">Ver ticket</li>
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+    
+            <section class="content">
+                <div class="container-fluid">
+                <div class="row">
+                    <h3 id="stateTicket">
+                        <strong>
+                            <span class="badge badge-pill badge-${stateSelectorColor[statusKey]}" id="title"></span>
+                            <input type="hidden" value="" id="description">
+                        </strong>
+                    </h3>
+                    <div class="col-sm-12 card bg-white p-4">
+                        <div class="row">
+                            <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
+                            <div class="row">
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Estado:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="state"></div>
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Prioridad:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="priority"></div>
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Fecha de creaci&oacute;n:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="createAt"></div>
+                            </div>
+                            </div>
+                            <!-- /. left -->
+                            <div class="col-sm-6 col-md-6 col-lg-6 col-lx-6">
+                            <div class="row">
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Usuario:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="user"></div>
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Categor&iacute;a:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="category"></div>
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Tipo de servicio:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="serviceType"></div>
+                                <!-- list-group -->
+                                <div class="col-6 mb-2">
+                                    <b>Asignado a:</b>
+                                </div>
+                                <div class="col-6 mb-2" id="support"></div>
+                            </div>
+                            </div>
+                            <!-- /. right -->
+                        </div>
+                    </div>
+                    <div class="col-sm-12 card p-2">
+                    <!-- The timeline -->
+                    <div class="timeline timeline-inverse"></div>
+                    </div>
+                    <div id="target"></div>
+                    <div class="col-sm-12 card p-2" id="formContainerResponseTicket"></div>
+                </div>
+                </div>
+                <!-- /.container-fluid -->
+            </section>
+        `
+        container.innerHTML = content;
+        viewTicket(ticket);
+        timeLine(ticket, element.getAttribute('description'), element.getAttribute('ids-unreads'));
+    
+        // Renderizar formulario de respuesta en caso que el ticket aún se encuentre en los siguientes estados (Abierto, En progreso, Solucionado)
+        const verifyTicketApproved = element.getAttribute('approved');
+    
+        if (
+            statusKey == 'Abierto' ||
+            statusKey == 'En progreso' ||
+            statusKey == 'Solucionado'
+        ) {
+            let showApprovedCheck = false
+            if (statusKey == 'Solucionado') {
+                showApprovedCheck = true
+            }
+            renderFormResponseTicket(ticket, showApprovedCheck);
+            tinyRender('textarea#comment');
+    
+            document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
+        } else if (
+            verifyTicketApproved == 'true' ||
+            statusKey == 'Rechazado' ||
+            statusKey == 'Cierre Automático'
+        ) {
+            document.getElementById('formContainerResponseTicket').style.display = 'none';
+        }
     }
 };
 
@@ -341,7 +834,7 @@ const viewTicket = async (ticket) => {
 }
 
 // API TimeLine
-const timeLine = async (ticket, ticketDescription) => {
+const timeLine = async (ticket, ticketDescription, idsUnReads) => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
     if (userData == null) {
@@ -356,6 +849,9 @@ const timeLine = async (ticket, ticketDescription) => {
             'Authorization': 'Bearer ' + userData.token
         }
     }
+
+    // Captura de elementos no leídos
+    const unreads = [];
 
     try {
         const response = await fetch(endpointTimeLine, options);
@@ -428,7 +924,12 @@ const timeLine = async (ticket, ticketDescription) => {
                         timeLineItemDiv.className = 'timeline-item';
                         timeSpan.className = 'time';
                         header.className = 'timeline-header';
-                          
+
+                        // Set id last history
+                        if ((data.length - 1) == index) {
+                            header.setAttribute('id', 'history-last');
+                        }
+                       
                         // Append content
                         if (
                             history.sub_state_simple == 'TC' ||
@@ -438,7 +939,13 @@ const timeLine = async (ticket, ticketDescription) => {
                             history.sub_state_simple == 'CL' ||
                             history.sub_state_simple == 'R1'
                         ) {
-                            header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                unreads.push(history.id);
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                            }
                         } else if (
                             history.sub_state_simple == 'AS' ||
                             history.sub_state_simple == 'BS' ||
@@ -447,12 +954,29 @@ const timeLine = async (ticket, ticketDescription) => {
                             history.sub_state_simple == 'R' ||
                             history.sub_state_simple == 'R2'
                         ) {
-                            header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                unreads.push(history.id);
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                            }
+            
                         } else if (
                             history.sub_state_simple == 'RR' ||
                             history.sub_state_simple == 'CA' 
                         ) {
-                            header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                if (history.sub_state_simple == 'RR') {
+                                    unreads.push(history.id);
+                                    header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                                }else{
+                                    header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';    
+                                }
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';
+                            }
                         };
                                 
                         timeSpan.innerHTML = '<i class="far fa-clock"></i> ' + fullTime;
@@ -581,6 +1105,11 @@ const timeLine = async (ticket, ticketDescription) => {
                         timeLineItemDiv.className = 'timeline-item';
                         timeSpan.className = 'time';
                         header.className = 'timeline-header';
+                        
+                        // Set id last history
+                        if ((data.length - 1) == index) {
+                            header.setAttribute('id', 'history-last');
+                        }
                           
                         // Append content
                         if (
@@ -591,7 +1120,13 @@ const timeLine = async (ticket, ticketDescription) => {
                             history.sub_state_simple == 'CL' ||
                             history.sub_state_simple == 'R1'
                         ) {
-                            header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                unreads.push(history.id);
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>';
+                            }
                         } else if (
                             history.sub_state_simple == 'AS' ||
                             history.sub_state_simple == 'BS' ||
@@ -600,11 +1135,27 @@ const timeLine = async (ticket, ticketDescription) => {
                             history.sub_state_simple == 'R' ||
                             history.sub_state_simple == 'R2'
                         ) {
-                            header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                unreads.push(history.id);
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>';
+                            }
+
                         } else if (
                             history.sub_state_simple == 'RR' ||
                             history.sub_state_simple == 'CA' 
                         ) {
+                            // Mark unread
+                            if (history.read_by_customer == false){
+                                if (history.sub_state_simple == 'RR') {
+                                    unreads.push(history.id);
+                                    header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
+                                }
+                            }else{
+                                header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>'
+                            }
                             header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>';
                         };
                         
@@ -730,7 +1281,7 @@ const timeLine = async (ticket, ticketDescription) => {
         console.error('Error', error);
     }
 
-
+    htmlViewTicket(idsUnReads, 'default');
 };
 
 // API Response ticket
@@ -798,5 +1349,70 @@ const responseTicket = async () => {
     }
 }
 
+// Check target and scroll
+const check_target_and_scroll = () => {
+    const element = document.getElementById('history-last');
+
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+};
+
+const endPointReadsHistories = async (idsUnReads) => {
+    
+    //Check authentication jwt
+    const userDataString = sessionStorage.getItem('user');
+    const userData = JSON.parse(userDataString);
+
+    if (userData.token == null) {
+        window.location.href = '../../../login';
+    }
+
+    let arrString = idsUnReads.split(',');
+    let arrInteger = [];
+    for (let i = 0; i < arrString.length; i++) {
+        arrInteger.push(parseInt(arrString[i]));
+    }
+    const jsonArrInteger = JSON.stringify({"id_histories": arrInteger});
+
+    const endPointReadsHistories = 'http://127.0.0.1:8000/ticket/read-history-customer';
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer ' + userData.token
+        },
+        body: jsonArrInteger
+    }
+    
+
+    try {
+        const response = await fetch(endPointReadsHistories, options);
+        if (response == 200) {
+            const data = response.json();
+            console.log(data);
+
+        } else if (response.status == 400) {
+            console.error(response.status);
+        } else if (response.status == 401) {
+            sessionStorage.clear();
+            window.location.href = '../../../login';
+        } else if (response.status == 403) {
+            window.location.href = '../error403.html';
+        } else if (response.status == 404) {
+            window.location.href = '../error404.html';
+        }
+
+    } catch (error) {
+        console.error('Error', error);
+    }
+
+}
+
 document.addEventListener('DOMContentLoaded', listTickets);
+
+
 

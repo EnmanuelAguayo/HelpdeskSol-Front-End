@@ -1,3 +1,14 @@
+.card-scroll{
+  height: 100px !important;
+}
+.scroll-div {
+  width: 100%;
+  overflow-x: auto;
+  height: 5vh;
+}
+.content-scroll {
+  width:1500px;
+}
 .logo-login{
   max-width: 150px;
   align-items: center;
