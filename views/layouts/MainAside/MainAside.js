@@ -41,14 +41,14 @@ const mainAside = async () => {
                 with font-awesome or any other icon font library -->
             
                 <li class="nav-item linkPage">
-                <a href="../bienvenido" class="nav-link linkPage">
-                  <i class="far fa-house nav-icon linkPage"></i>
+                <a href="../bienvenido" class="nav-link linkPage link-aside" link-aside-target="true">
+                  <i class="fas fa-house nav-icon linkPage"></i>
                   <p class="linkPage">Bienvenido</p>
                 </a>
               </li>
 
-            <li class="nav-item menu-open">
-              <a href="#" class="nav-link active">
+            <li class="nav-item">
+              <a href="#" class="nav-link link-aside-target" link-aside-target="true">
                 <i class="nav-icon far fa-ticket"></i>
                 <p>
                   Tickets
@@ -57,13 +57,13 @@ const mainAside = async () => {
               </a>
               <ul class="nav nav-treeview linkPage">
                 <li class="nav-item">
-                  <a href="../nuevoTicket" class="nav-link">
+                  <a href="../nuevoTicket" class="nav-link link-aside">
                     <i class="fas fa-plus nav-icon"></i>
                     <p>Nuevo ticket</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="../tickets" class="nav-link">
+                  <a href="../tickets" class="nav-link link-aside">
                     <i class="fas fa-list nav-icon"></i>
                     <p>Tickets</p>
                   </a>
