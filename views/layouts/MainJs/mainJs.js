@@ -8,16 +8,6 @@ const mainJs = () => {
     rootAdminLte = '../../';
   }
 
-  // jQuery
-  const jqueryScript = document.createElement('script');
-  jqueryScript.src = rootAdminLte + rootFile + 'jquery/jquery.min.js';
-  document.body.appendChild(jqueryScript);
-
-  // Bootstrap 4
-  const boostrapScript = document.createElement('script');
-  boostrapScript.src = rootAdminLte + rootFile + 'bootstrap/js/bootstrap.bundle.min.js';
-  document.body.appendChild(boostrapScript);
-
   // DataTables
   if (window.location.href.split("/")[6] == 'incidencias') {
     const jqueryDataTable = document.createElement('script');
@@ -69,10 +59,7 @@ const mainJs = () => {
     document.body.appendChild(buttonsColvis);
   };
 
-  // AdminLTE App
-  const adminlteScript = document.createElement('script');
-  adminlteScript.src = rootAdminLte + 'public/adminlte.3.2.0/js/adminlte.min.js';
-  document.body.appendChild(adminlteScript);
+  
 
 
   

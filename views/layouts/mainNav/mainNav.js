@@ -10,6 +10,14 @@ const mainNav = async () => {
         <a href="../bienvenido" class="nav-link">Home</a>
       </li>
     </ul>
+    <ul class="navbar-nav ml-auto">   
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a id="logout" class="nav-link text-danger" data-toggle="dropdown" href="#">
+          Cerrar sesi&oacute;n
+        </a>
+      </li>
+    </ul>
   `;
   container.innerHTML = content;
 }

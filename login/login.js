@@ -46,7 +46,9 @@ const login = async (event) =>{
                 'id': data.user.id,
                 'email': data.user.email,
                 'username': data.user.username,
-                'token': data.token_access
+                'type_user': data.user.type_user,
+                'token': data.token_access,
+                'refresh_token': data.refresh_token
             }
             sessionStorage.setItem('user', JSON.stringify(user));
             window.location.href = '../views/pages/bienvenido';
@@ -58,16 +60,17 @@ const login = async (event) =>{
     }
 }
 
-const checkSession = () => {
+const session = () => {
     const userDataString = sessionStorage.getItem('user');
     const userData = JSON.parse(userDataString);
 
     if (userData != null) {
+        console.log("userData.token-login", userData.token);
         window.location.href = '../views/pages/bienvenido';
     };
 };
 
-document.addEventListener('DOMContentLoaded', checkSession);
+document.addEventListener('DOMContentLoaded', session);
 document.querySelector('#submitLogin').addEventListener('click', function (event){
     login(event);
 });

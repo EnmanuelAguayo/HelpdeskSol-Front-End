@@ -1,10 +1,16 @@
 const bienvenido = async () => {
+
+  resultUserData = checkSessionToken();
+  
+  if (resultUserData === false) {
+    console.log("userData", userData);
+    window.location.href = '../../../login';
+    return false;
+  }
+
   const userDataString = sessionStorage.getItem('user');
   const userData = JSON.parse(userDataString);
   
-  if (userData == null) {
-    window.location.href = '../../../login';
-  }
   
   const endpointInfoCustomer = 'http://127.0.0.1:8000/info/customer';
   const endpointInfoDevices = 'http://127.0.0.1:8000/info/customer/devices';
@@ -75,15 +81,15 @@ const bienvenido = async () => {
 
         document.getElementById('infoDevices').innerHTML = infoDevices;
         
-      } else if (response.status == 401) {
+      } else if (responseCustomer.status == 401 || responseDevices == 401) {
         sessionStorage.clear();
         window.location.href = '../../../login';
-      } else if (response.status == 403) {
+      } else if (responseCustomer.status == 403 || responseDevices == 403) {
         window.location.href = '../error403.html';
-      } else if (response.status == 404) {
+      } else if (responseCustomer.status == 404 || responseDevices == 404) {
         window.location.href = '../error404.html';
       } else {
-          console.error('Error', response.status);
+          console.error('Ocurrió un error inesperado');
       }
   } catch (error){
     console.error(error);
@@ -125,9 +131,9 @@ const bienvenido = async () => {
     `;
     listIncidencias.innerHTML = contentSummary;
     } else if (response.status == 404) {
-      listIncidencias.innerHTML = '<p>Contenido no disponible</p>';
+      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">Contenido no disponible</li>';
     } else if (response.status == 403) {
-      listIncidencias.innerHTML == '<p>No posee permiso para visualizar el contenido de este apartado.</p>';
+      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">No posee permiso para visualizar el contenido de este apartado.</li>';
     }
   } catch (error) {
     console.error(error)

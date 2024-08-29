@@ -120,7 +120,8 @@ const register = async (event) => {
             'last_name': lastName, 
             'email': email, 
             'password': password, 
-            'team': team
+            'team': team,
+            'type_user': 1,
         })
     };
 
