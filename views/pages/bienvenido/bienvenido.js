@@ -11,10 +11,17 @@ const bienvenido = async () => {
   const userDataString = sessionStorage.getItem('user');
   const userData = JSON.parse(userDataString);
   
+  // Endpoints
   
-  const endpointInfoCustomer = 'http://127.0.0.1:8000/info/customer';
-  const endpointInfoDevices = 'http://127.0.0.1:8000/info/customer/devices';
-  const endpointSummaryTickets = 'http://127.0.0.1:8000/ticket/summary/customer/' + userData.id;
+    // Customer
+    const endpointInfoCustomer = 'http://127.0.0.1:8000/info/customer';
+    const endpointInfoDevices = 'http://127.0.0.1:8000/info/customer/devices';
+    const endpointSummaryTicketsCustomer = 'http://127.0.0.1:8000/ticket/summary/customer/' + userData.id;
+  
+    // Support
+    const endpointInfoSoporte = 'http://127.0.0.1:8000/info/support';
+    const endpointSummaryTicketsSupport = 'http://127.0.0.1:8000/ticket/summary/support/' + userData.id;
+   
   
   const options = {
     method: 'GET',
@@ -24,72 +31,86 @@ const bienvenido = async () => {
     }
   }
 
-  
+  // Information
   try { 
-    const responseCustomer = await fetch(endpointInfoCustomer, options);
-    const responseDevices = await fetch(endpointInfoDevices, options);
+    let responseBasicInformation = await fetch(userData.type_user == "C" ? endpointInfoCustomer : endpointInfoSoporte, options);
+    let responseDevices = userData.type_user == "C" ? await fetch(endpointInfoDevices, options) : '';
       
-      if (responseCustomer.status == 200 && responseDevices.status == 200) {
-        // Datos de usuario
-        let dataCustomer = await responseCustomer.json();
+    // Datos de usuario
+      if (responseBasicInformation.status == 200) {
+        let dataUser = await responseBasicInformation.json();
         pushContent();
-        let infoCustomer = `
-          <strong>Nombre: </strong> ${dataCustomer.fullname} </br>
-          <strong>Usuario: </strong> ${dataCustomer.username} </br>
-          <strong>Team: </strong> ${dataCustomer.team} </br>
-          <strong>Estado: </strong> ${dataCustomer.availability} </br>
+        let infoUser = `
+          <strong>Nombre: </strong> ${dataUser.fullname} </br>
+          <strong>Usuario: </strong> ${dataUser.username} </br>
+          <strong>Team: </strong> ${userData.type_user == "C" ? dataUser.team : 'Soporte'}</br>
+          <strong>Estado: </strong> ${dataUser.availability} </br>
         `;
-        document.getElementById('infoCustomer').innerHTML = infoCustomer;
-
-        // Dispositivos
-        let dataDevices = await responseDevices.json();
-        let infoDevices = "";
-        
-        if (dataDevices) {
-
-          for (let index = 0; index < dataDevices.length; index++) {
-            const device = dataDevices[index];
-
-            if (device.image == null) {
-                infoDevices += `
-                
-                  <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
-                    <div class="card-header">
-                      <strong>${device.description}</strong> - ${device.type_name}
-                    </div>
-                    <div class="card-body">
-                      <img class="img-fluid" src="../../../public/adminlte.3.2.0/img/device.png">
-                    </div>
-                  </div>
-                `;
-            } else {
-                infoDevices += `
-                  <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
-                    <div class="card-header">
-                      <strong>${device.description}</strong> - ${device.type_name}
-                    </div>
-                    <div class="card-body">
-                      <img class="img-fluid" src="${device.image}">
-                    </div>
-                  </div>
-                `;
-            }
-          }
-        } else {
-          infoDevices = '<p class="text-secondary">No hay dispositivos agregados.</p>'
-        }
-
-        document.getElementById('infoDevices').innerHTML = infoDevices;
-        
-      } else if (responseCustomer.status == 401 || responseDevices == 401) {
+        document.getElementById('infoUser').innerHTML = infoUser;
+      } else if (responseBasicInformation.status == 401) {
         sessionStorage.clear();
         window.location.href = '../../../login';
-      } else if (responseCustomer.status == 403 || responseDevices == 403) {
-        window.location.href = '../error403.html';
-      } else if (responseCustomer.status == 404 || responseDevices == 404) {
-        window.location.href = '../error404.html';
+      } else if (responseBasicInformation.status == 403) {
+        document.getElementById('infoUser').innerHTML = '<p>Error 403. No Autorizado.</p>';
+      } else if (responseBasicInformation.status == 404) {
+          document.getElementById('infoUser').innerHTML = '<p>Error 404. No encontrado.</p>';
       } else {
-          console.error('Ocurrió un error inesperado');
+        console.error('Ocurrió un error inesperado');
+      }
+
+    // Dispositivos
+      if (userData.type_user == "C") {
+
+        if (responseDevices.status == 200) {
+          let dataDevices = await responseDevices.json();
+          let infoDevices = "";
+          
+          if (dataDevices) {
+            for (let index = 0; index < dataDevices.length; index++) {
+              const device = dataDevices[index];
+  
+              if (device.image == null) {
+                  infoDevices += `
+                  
+                    <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
+                      <div class="card-header">
+                        <strong>${device.description}</strong> - ${device.type_name}
+                      </div>
+                      <div class="card-body">
+                        <img class="img-fluid" src="../../../public/adminlte.3.2.0/img/device.png">
+                      </div>
+                    </div>
+                  `;
+              } else {
+                  infoDevices += `
+                    <div class="col-sm-6 ml-5 card text-black bg-light" style="max-width: 18rem;">
+                      <div class="card-header">
+                        <strong>${device.description}</strong> - ${device.type_name}
+                      </div>
+                      <div class="card-body">
+                        <img class="img-fluid" src="${device.image}">
+                      </div>
+                    </div>
+                  `;
+              }
+            }
+          } else {
+            infoDevices = '<p class="text-secondary">Ningún dispositivo asignado.</p>'
+          }
+          document.getElementById('infoDevices').innerHTML = infoDevices;
+        } else if (responseDevices == 401) {
+          sessionStorage.clear();
+          window.location.href = '../../../login';
+        } else if (responseDevices == 403) {
+          document.getElementById('infoDevices').innerHTML = '<p>Error 403. No Autorizado.</p>';
+        } else if (responseDevices == 404) {
+          document.getElementById('infoDevices').innerHTML = '<p>Error 404. No Encontrado.</p>';
+        } else {
+          console.error('Ocurri&oacute; un error inesperado');
+        }
+
+      } else {
+        document.getElementsByClassName('infoDevices')[0].style.display = 'none';
       }
   } catch (error){
     console.error(error);
@@ -98,7 +119,7 @@ const bienvenido = async () => {
   // Summary tickets
   try {
     const listIncidencias = document.getElementById('listIncidencias');
-    const response = await fetch(endpointSummaryTickets, options);
+    let response = await fetch(userData.type_user == "C" ? endpointSummaryTicketsCustomer : endpointSummaryTicketsSupport, options);
     const optionsSummary = ['open_count', 'in_progress_count', 'solved_count', 'approved_count', 'rejected_count'];
   
     if ( response.status == 200) {
@@ -131,9 +152,9 @@ const bienvenido = async () => {
     `;
     listIncidencias.innerHTML = contentSummary;
     } else if (response.status == 404) {
-      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">Contenido no disponible</li>';
+      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">Error 404. No Encontrado.</li>';
     } else if (response.status == 403) {
-      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">No posee permiso para visualizar el contenido de este apartado.</li>';
+      listIncidencias.innerHTML = '<li class="list-group-item d-flex justify-content-between align-items-center">Error 403. No Autorizado.</li>';
     }
   } catch (error) {
     console.error(error)
@@ -172,11 +193,11 @@ const pushContent = async () => {
                 <div class="card-header">
                   <h5 class="text-center">Datos personales</h5>
                 </div>
-                <p id='infoCustomer' class="m-3"></p>
+                <p id='infoUser' class="m-3"></p>
               </div>
             </div>
 
-            <div class="col-sm-12 col-md-12 col-lg-12 col-lx-12">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-lx-12 infoDevices">
               <div class="card">
                 <div class="card-header">
                   <h5 class="text-center">Dispositivos</h5>
