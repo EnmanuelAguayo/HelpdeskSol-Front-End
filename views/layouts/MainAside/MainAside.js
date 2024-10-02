@@ -2,6 +2,10 @@ const mainAside = async () => {
   const container = document.getElementById('mainAside');
   const userDataJson = sessionStorage.getItem('user');
   const userData = JSON.parse(userDataJson);
+  const displayForUser = userData.type_user == 'S' ? 'none' : 'block';
+  console.info(userData.type_user);
+  console.info(displayForUser);
+
   
   const content = `
       <!-- Brand Logo -->
@@ -56,13 +60,13 @@ const mainAside = async () => {
                 </p>
               </a>
               <ul class="nav nav-treeview linkPage">
-                <li class="nav-item">
+                <li class="nav-item" id="nuevoTicket" style="display: ${displayForUser};">
                   <a href="../nuevoTicket" class="nav-link link-aside">
                     <i class="fas fa-plus nav-icon"></i>
                     <p>Nuevo ticket</p>
                   </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="listarTickets">
                   <a href="../tickets" class="nav-link link-aside">
                     <i class="fas fa-list nav-icon"></i>
                     <p>Tickets</p>
@@ -76,6 +80,6 @@ const mainAside = async () => {
       </div>
       <!-- /.sidebar -->
     `
-  container.innerHTML = content;
+    container.innerHTML = content;
 } 
 document.addEventListener('DOMContentLoaded', mainAside);

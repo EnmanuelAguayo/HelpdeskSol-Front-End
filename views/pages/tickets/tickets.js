@@ -1,13 +1,19 @@
+resultUserData = checkSessionToken();
+const userDataString = sessionStorage.getItem('user');
+const userData = JSON.parse(userDataString);
+
 // API listar tickets de cliente y crear contenido (data) para la función (htmlListTickets)
 const listTickets = async () => {
-    const userDataString = sessionStorage.getItem('user');
-    const userData = JSON.parse(userDataString);
 
-    if (userData == null) {
+  
+    if (resultUserData === false) {
         window.location.href = '../../../login';
+        return false;
     }
 
-    const endpointListTickets = 'http://127.0.0.1:8000/ticket/list/customer';
+
+    const endpointListTicketsCustomer = 'http://127.0.0.1:8000/ticket/list/customer';
+    const endpointListTicketsSupport = 'http://127.0.0.1:8000/ticket/list/support';
     const options = {
         method: 'GET',
         headers: {
@@ -26,7 +32,7 @@ const listTickets = async () => {
     };
 
     try {
-        const response = await fetch(endpointListTickets, options);
+        const response = await fetch(userData.type_user == 'C' ? endpointListTicketsCustomer : endpointListTicketsSupport, options);
         
         if (response.status == 200) {
             let dataTicket = await response.json();
@@ -45,7 +51,7 @@ const listTickets = async () => {
                         subArrayAbiertos.push(`#${dataRow.ticket}`);
                         subArrayAbiertos.push(dataRow.title);
                         
-                        if (dataRow.unread_history != null) {
+                        if (dataRow.unread_history != null && userData.type_user == 'C') {
                             let message = "";
 
                             for (let i=0; i < dataRow.unread_history.length; i++) {
@@ -94,7 +100,7 @@ const listTickets = async () => {
                                     </div>
                                 `
                             );
-                        }else if (dataRow.unread_history == null) {
+                        }else if (dataRow.unread_history == null && userData.type_user == 'C' || userData.type_user == 'S') {
                             subArrayAbiertos.push(
                                 `
                                     <button type='button' 
@@ -119,7 +125,7 @@ const listTickets = async () => {
                         subArrayProgreso.push(`#${dataRow.ticket}`);
                         subArrayProgreso.push(dataRow.title);
                         
-                        if (dataRow.unread_history != null) {
+                        if (dataRow.unread_history != null && userData.type_user == 'C') {
                             let message = "";
                             for (let i=0; i < dataRow.unread_history.length; i++) {
                                 idUnReadProgreso.push(dataRow.unread_history[i].id);
@@ -167,7 +173,7 @@ const listTickets = async () => {
                                     </div>
                                 `
                             );
-                        }else {
+                        }else if (dataRow.unread_history == null && userData.type_user == 'C' || userData.type_user == 'S') {
                             subArrayProgreso.push(
                                 `
                                     <button type='button' 
@@ -190,7 +196,7 @@ const listTickets = async () => {
                         let subArraySolucionado = [];
                         subArraySolucionado.push(`#${dataRow.ticket}`);
                         subArraySolucionado.push(dataRow.title);
-                        if (dataRow.unread_history != null) {
+                        if (dataRow.unread_history != null && userData.type_user == 'C') {
                             let message = "";
                             for (let i=0; i < dataRow.unread_history.length; i++) {
                                 idUnReadSolucionado.push(dataRow.unread_history[i].id);
@@ -238,7 +244,7 @@ const listTickets = async () => {
                                     </div>
                                 `
                             )
-                        }else {
+                        }else if (dataRow.unread_history == null && userData.type_user == 'C' || userData.type_user == 'S'){
                             subArraySolucionado.push(
                                 `
                                     <button type='button' 
@@ -261,7 +267,7 @@ const listTickets = async () => {
                         let subArrayAprobado = [];
                         subArrayAprobado.push(`#${dataRow.ticket}`);
                         subArrayAprobado.push(dataRow.title);
-                        if (dataRow.unread_history != null) {
+                        if (dataRow.unread_history != null && userData.type_user == 'C') {
                             let message = "";
                             for (let i=0; i < dataRow.unread_history.length; i++) {
                                 idUnReadAprobado.push(dataRow.unread_history[i].id);
@@ -309,7 +315,7 @@ const listTickets = async () => {
                                     </div>
                                 `
                             )
-                        }else {
+                        }else if (dataRow.unread_history == null && userData.type_user == 'C' || userData.type_user == 'S'){
                             subArrayAprobado.push(
                                 `
                                     <button type='button' 
@@ -333,7 +339,7 @@ const listTickets = async () => {
                         subArrayRechazado.push(`#${dataRow.ticket}`);
                         subArrayRechazado.push(dataRow.title);
         
-                        if (dataRow.unread_history != null) {
+                        if (dataRow.unread_history != null && userData.type_user == 'C') {
                             let message = "";
                             for (let i=0; i < dataRow.unread_history.length; i++) {
                                 idUnReadRechazado.push(dataRow.unread_history[i].id);
@@ -381,7 +387,7 @@ const listTickets = async () => {
                                     </div>
                                 `
                             );
-                        }else {
+                        }else if (dataRow.unread_history == null && userData.type_user == 'C' || userData.type_user == 'S'){
                             subArrayRechazado.push(
                                 `
                                     <button type='button' 
@@ -439,9 +445,11 @@ const listTickets = async () => {
             sessionStorage.clear();
             window.location.href = '../../../login';
         } else if (response.status == 403) {
-            window.location.href = '../error403.html';
+            alert('Error 403. No Autorizado.');
+            window.location.href = '../bienvenido';
         } else if (response.status == 404) {
-            window.location.href = '../error404.html';
+            alert('Error 404. No encontrado.')
+            window.location.href = '../bienvenido';
         }
     } catch (error) {
         console.error('Error', error);
@@ -451,6 +459,12 @@ const listTickets = async () => {
 
 // HTML Listar tickets en el front (Activos, En proceso, Resueltos)
 const htmlListTickets = (nameDataTable, data) => {
+
+    if (resultUserData === false) {
+        window.location.href = '../../../login';
+        return false;
+    }
+
     const container = document.getElementById('mainDinamic');
     container.setAttribute('pagename', 'tickets');
     
@@ -621,15 +635,23 @@ const htmlListTickets = (nameDataTable, data) => {
 // HTML Renderizar información del ticket (View and TimeLine) al dar click en el registro
 
 const htmlViewTicket = (element, ticket) => { //Si la página viewticket cargó correctamente usamos el parámetro ticket para enviar las historias no leídas
-   
+    
+    if (resultUserData === false) {
+        window.location.href = '../../../login';
+        return false;
+    }
+
     const container = document.getElementById('mainDinamic');
     const checkpagename = container.getAttribute('pagename');
-    
+
     if (checkpagename == 'viewTicket') { // Comprobamos si la página de vista ha cargado correctamente
         check_target_and_scroll();
 
-        if (element) {
-            endPointReadsHistories(element);
+        if (userData.type_user == 'C') {
+            if (element) {
+                endPointReadsHistories(element);
+            }
+
         }
 
     } else {
@@ -750,7 +772,7 @@ const htmlViewTicket = (element, ticket) => { //Si la página viewticket cargó 
             if (statusKey == 'Solucionado') {
                 showApprovedCheck = true
             }
-            renderFormResponseTicket(ticket, showApprovedCheck);
+            renderFormResponseTicket(ticket, showApprovedCheck, userData.type_user, statusKey);
             tinyRender('textarea#comment');
     
             document.getElementById('submitResponseTicket').addEventListener('click', responseTicket);
@@ -766,11 +788,11 @@ const htmlViewTicket = (element, ticket) => { //Si la página viewticket cargó 
 
 // API View ticket
 const viewTicket = async (ticket) => {
-    const userDataString = sessionStorage.getItem('user');
-    const userData = JSON.parse(userDataString);
-    if (userData == null) {
-        window.location.href = '../../../login/';
-    };
+    
+    if (resultUserData === false) {
+        window.location.href = '../../../login';
+        return false;
+    }
 
     const endpointViewTicket = 'http://127.0.0.1:8000/ticket/view/' + ticket;
     const options = {
@@ -797,11 +819,18 @@ const viewTicket = async (ticket) => {
             const support = document.getElementById('support');
             const description = document.getElementById('description');
 
+            const dateHistory = new Date(data.create_at);
+            const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+            const fullDate = (dateHistory.getDate()) + ' de ' + monthNames[dateHistory.getMonth()] + ' ' + dateHistory.getFullYear();
+            const hour = dateHistory.getHours();
+            const minutes = dateHistory.getMinutes() == 0 ? '00' : (dateHistory.getMinutes() <= 9 ? '0' + dateHistory.getMinutes() : dateHistory.getMinutes());
+            const fullTime = hour <= 12 ? hour + ':' + minutes + ' am' : hour + ':' + minutes + ' pm';
+
             // Set Dom elements
             title.textContent = `#Ticket ${data.ticket} - ${data.title}`;
             state.textContent = data.state;
             priority.textContent = data.priority;
-            createAt.innerHTML = `${data.create_at} <i class="fas fa-clock"></i>`;
+            createAt.innerHTML = `${fullDate} / ${fullTime} <i class="fas fa-clock"></i>`;
             user.textContent = data.user;
             category.textContent = data.category;
             serviceType.textContent = data.service_type;
@@ -835,11 +864,11 @@ const viewTicket = async (ticket) => {
 
 // API TimeLine
 const timeLine = async (ticket, ticketDescription, idsUnReads) => {
-    const userDataString = sessionStorage.getItem('user');
-    const userData = JSON.parse(userDataString);
-    if (userData == null) {
+    
+    if (resultUserData === false) {
         window.location.href = '../../../login';
-    };
+        return false;
+    }
 
     const endpointTimeLine = 'http://127.0.0.1:8000/ticket/timeline/' + ticket;
     const options = {
@@ -940,7 +969,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'R1'
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 unreads.push(history.id);
                                 header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
                             }else{
@@ -955,7 +984,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'R2'
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 unreads.push(history.id);
                                 header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
                             }else{
@@ -967,7 +996,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'CA' 
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 if (history.sub_state_simple == 'RR') {
                                     unreads.push(history.id);
                                     header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
@@ -989,7 +1018,94 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             
                             body.className = 'timeline-body';
                             if (history.sub_state_simple == 'TC') {
+                                console.log('history', history);
                                 body.innerHTML = ticketDescription;
+
+                                // Mostrar Files
+                                if (history.files.length > 0) {
+                                    const elementPFile = document.createElement('p');
+                                    const urlFiles = history.files;
+                                    
+                                    // Iterar files
+                                    urlFiles.forEach(file => {
+                                        // Crear elemento aHref y agregar link para visualizar archivo en una nueva pestaña
+                                        const elementAHref = document.createElement('a');
+                                        const elementSpanNameFile = document.createElement('span');
+                                        const elementBr = document.createElement('br');
+                                        elementBr.style.marginBottom = '8%';
+                                        elementAHref.setAttribute('href', 'http://127.0.0.1:8000' + file.url);
+                                        elementAHref.setAttribute('target', 'blank');
+
+                                        // Crear elementos de imagen y modificar su tamaño 
+                                        const elementImgFile = document.createElement('img');
+                                        elementImgFile.setAttribute('width', '10%');
+                                        
+                                        if (
+                                            file.url.split('.')[1] == 'png' ||
+                                            file.url.split('.')[1] == 'jpg' ||
+                                            file.url.split('.')[1] == 'jpeg' ||
+                                            file.url.split('.')[1] == 'gif' 
+                                        ) {
+                                            
+                                            elementImgFile.setAttribute('src', 'http://127.0.0.1:8000' + file.url);
+                                            
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'doc' ||
+                                            file.url.split('.')[1] == 'docx'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/word.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'xls' ||
+                                            file.url.split('.')[1] == 'xlsx' 
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/excel.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'ppt' ||
+                                            file.url.split('.')[1] == 'pptx'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/powerpoint.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        } else if (
+                                            file.url.split('.')[1] == 'pdf'
+                                        ) {
+                                            elementImgFile.setAttribute('src', '../../../public/adminlte.3.2.0/img/icons/pdf.png');
+
+                                            // Agregar elemento
+                                            elementAHref.appendChild(elementImgFile);
+                                            elementSpanNameFile.innerHTML = file.url.split('/')[3]; 
+                                            elementAHref.appendChild(elementSpanNameFile);
+                                            elementPFile.appendChild(elementBr);
+                                            elementPFile.appendChild(elementAHref);
+                                        }
+                                    })
+                                    body.appendChild(elementPFile);
+                                }
                             } else {
                                 body.innerHTML = history.comment.comment;
                                 
@@ -1121,7 +1237,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'R1'
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 unreads.push(history.id);
                                 header.innerHTML = history.sub_state + ' <a href="#">' + history.customer + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
                             }else{
@@ -1136,7 +1252,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'R2'
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 unreads.push(history.id);
                                 header.innerHTML = history.sub_state + ' <a href="#">' + history.support + '</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
                             }else{
@@ -1148,7 +1264,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                             history.sub_state_simple == 'CA' 
                         ) {
                             // Mark unread
-                            if (history.read_by_customer == false){
+                            if (history.read_by_customer == false && userData.type_user == 'C'){
                                 if (history.sub_state_simple == 'RR') {
                                     unreads.push(history.id);
                                     header.innerHTML = history.sub_state + ' <a href="#" class="text-secondary">Sistema</a>' + "<span class='badge badge-pill badge-dark ml-3'><i class='nav-icon far fa-envelope'></i></span><br>";
@@ -1286,14 +1402,14 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
 
 // API Response ticket
 const responseTicket = async () => {
-    userDataString = sessionStorage.getItem('user');
-    userData = JSON.parse(userDataString)
     
-    if (userData.token == null) {
+    if (resultUserData === false) {
         window.location.href = '../../../login';
-    };
+        return false;
+    }
 
-    const endpointNewTicket = 'http://127.0.0.1:8000/ticket/response/customer';
+    const endpointResponseCustomer = 'http://127.0.0.1:8000/ticket/response/customer';
+    const endpointResponseSupport = 'http://127.0.0.1:8000/ticket/response/support';
     const ticket = document.getElementById('ticket').value;
     const comment = document.getElementById('notes').value;
     const files = document.getElementById('files').files;
@@ -1311,7 +1427,12 @@ const responseTicket = async () => {
     for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i]);
     }
-    formData.append('approved', approved);
+
+    if (userData.type_user == 'C') {
+        formData.append('approved', approved);
+    } else {
+        formData.append('state', document.getElementById('select_option').value);
+    }
 
 
     const options = {
@@ -1326,7 +1447,7 @@ const responseTicket = async () => {
     deleteErrors();
 
     try {
-        const response = await fetch(endpointNewTicket, options);
+        const response = await fetch(userData.type_user == 'C' ? endpointResponseCustomer : endpointResponseSupport, options);
         
         if (response.status == 201) {
             const data = await response.json();
@@ -1363,12 +1484,9 @@ const check_target_and_scroll = () => {
 
 const endPointReadsHistories = async (idsUnReads) => {
     
-    //Check authentication jwt
-    const userDataString = sessionStorage.getItem('user');
-    const userData = JSON.parse(userDataString);
-
-    if (userData.token == null) {
+    if (resultUserData === false) {
         window.location.href = '../../../login';
+        return false;
     }
 
     let arrString = idsUnReads.split(',');
