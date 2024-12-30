@@ -19,10 +19,10 @@ const register = async (event) => {
 
     // Check business email
     let splitEmail = email.split('@')[1];
-    if (splitEmail != 'elsol.com.py') {
+    if (splitEmail != 'royalseguros.com.py') {
         event.preventDefault();
         // Append errors
-        messagesErrors.push('El email corporativo debe incluir el dominio elsol.com.py');
+        messagesErrors.push('El email corporativo debe incluir el dominio royalseguros.com.py');
     }
 
     // Show errors

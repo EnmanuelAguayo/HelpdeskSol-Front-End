@@ -1022,7 +1022,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                                 body.innerHTML = ticketDescription;
 
                                 // Mostrar Files
-                                if (history.files.length > 0) {
+                                if (history.files != null) {
                                     const elementPFile = document.createElement('p');
                                     const urlFiles = history.files;
                                     
@@ -1110,7 +1110,7 @@ const timeLine = async (ticket, ticketDescription, idsUnReads) => {
                                 body.innerHTML = history.comment.comment;
                                 
                                 // Mostrar Files
-                                if (history.comment.files.length > 0) {
+                                if (history.comment.files != null) {
                                     const elementPFile = document.createElement('p');
                                     const urlFiles = history.comment.files;
                                     
