@@ -1,6 +1,23 @@
-# BEGIN WordPress
+# Habilitar la reescritura de URL
 RewriteEngine On
-RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirigir todas las solicitudes al archivo index.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([-a-zA-Z0-9/]+)$ index.php?pagina=$1
+RewriteRule ^ index.html [L]
+
+# Configuración de CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Verifica si la conexión no es HTTPS
+    RewriteCond %{HTTPS} !=on
+    # Redirige a HTTPS
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+</IfModule>
